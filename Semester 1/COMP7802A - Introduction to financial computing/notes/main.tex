@@ -1,0 +1,65 @@
+\documentclass{article}
+
+% Import necessary packages
+\usepackage{amsmath}  % For mathematical expressions
+\usepackage{amssymb}  % Additional math symbols
+\usepackage{geometry}  % Set page geometry
+\usepackage{graphicx}  % For adding images
+\usepackage{fancyhdr}  % For custom headers and footers
+\usepackage{titlesec}  % Control over title formatting
+\usepackage{tocloft}   % Customizing table of contents
+\usepackage{hyperref}  % For hyperlinks
+\usepackage{ctex}      % For Chinese characters
+
+% set date language to en-US
+\usepackage[english]{babel}
+
+% Set page geometry
+\geometry{a4paper, margin=1in}
+
+% Set header and footer
+\pagestyle{fancy}
+\fancyhf{}  % Clear all header and footer fields
+\fancyhead[L]{\includegraphics[width=0.2\textwidth]{./img/HKU.png}}  % Add logo to the left of the header
+\fancyhead[C]{\rightmark}  % Add current section title and number in the center of the header
+\fancyfoot[C]{\thepage}  % Page number in the center of the footer
+
+% Ensure section marks are shown in the right format
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+% Title setup
+\title{
+    \vspace{6cm}  % Add some vertical space before the title
+    \includegraphics[width=0.5\textwidth]{./img/HKU.png} \\ % Insert logo at the top of title page
+    \vspace{1cm}  % Add some vertical space between logo and title
+    COMP 7308A - Introduction to Financial Computing \\ % Title text
+}
+\author{Bai Junhao}
+\date{\today}
+
+% Reset page numbering after title page
+\pagestyle{plain}
+\begin{document}
+
+% Title page
+\maketitle
+\thispagestyle{empty}  % No page number on title page
+
+\newpage
+
+% Table of Contents
+\tableofcontents
+% set page numbering to roman
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\newpage
+
+% Start page numbering from here
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% Include the content from the file
+\input{01-BasicFinancialArithmetic}
+
+\end{document}
