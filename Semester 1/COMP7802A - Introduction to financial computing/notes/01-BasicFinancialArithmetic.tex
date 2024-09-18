@@ -1,49 +1,340 @@
-\section{Simple Interest - 单利}
+\section{Basic Financial Arithmetic - 基本财务算术}
+\subsection{Simple Interest - 单利}
+Simple interest (单利) 表示利息只是基于本金的利息。计算公式如下: 
+\begin{equation}
+    I = P \cdot r \cdot t
+\end{equation}
+其中: 
+\begin{itemize}
+    \item $I$ 是利息
+    \item $P$ 是本金
+    \item $r$ 是利率
+    \item $t$ 是时间
+\end{itemize}
 
-单利是指利息只在本金上计算，不计算利息的利息。
+如果把一年的利息分摊到天数, 那么计算公式可以改写为: 
+\begin{equation}
+    I = P \cdot r \cdot \frac{days}{365}
+\end{equation}
 
-\[
-\begin{aligned}
-    Total\ Proceed &= Principal + Interest \\
-    Total\ Proceed &= Principal \times \left(1 + Interest\ Rate \times \frac{days}{years}\right)
+如果是按月计算, 那么计算公式可以改写为: 
+\begin{equation}
+    I = P \cdot r \cdot \frac{months}{12}
+\end{equation}
+
+如果是按季度计算, 那么计算公式可以改写为: 
+\begin{equation}
+    I = P \cdot r \cdot \frac{quarters}{4}
+\end{equation}
+
+总收益可以通过下面的公式计算: 
+\begin{equation}
+    A = P + I
+\end{equation}
+其中: 
+\begin{itemize}
+    \item $A$ 是总收益 ($A$ : Amount)
+    \item $P$ 是本金
+    \item $I$ 是利息
+\end{itemize}
+
+
+\subsection{Compound Interest - 复利}
+Compound interest (复利) 表示利息是基于本金和之前的利息。计算公式如下: 
+\begin{equation}
+    A = P \left(1 + \frac{r}{n}\right)^{nt}
+\end{equation}
+其中: 
+\begin{itemize}
+    \item $A$ 是总收益
+    \item $P$ 是本金
+    \item $r$ 是利率
+    \item $n$ 是复利的次数
+    \item $t$ 是时间
+\end{itemize}
+
+如果把一年的利息分摊到天数, 那么计算公式可以改写为: 
+\begin{equation}
+    A = P \left(1 + \frac{r}{n}\right)^{n \cdot \frac{t}{365}}
+\end{equation}
+
+一般情况下, 复利的次数是一年一次, 即 $n = 1$, 这时候计算公式可以简化为: 
+\begin{equation}
+    A = P \left(1 + r\right)^{\frac{days}{365}}
+\end{equation}
+
+如果是按月计算, 复利的次数是一年 12 次, 即 $n = 12$, 这时候计算公式可以简化为: 
+\begin{equation}
+    A = P \left(1 + \frac{r}{12}\right)^{\frac{months}{12}}
+\end{equation}
+
+如果是按季度计算, 复利的次数是一年 4 次, 即 $n = 4$, 这时候计算公式可以简化为: 
+\begin{equation}
+    A = P \left(1 + \frac{r}{4}\right)^{\frac{quarters}{4}}
+\end{equation}
+
+\subsection{Nominal and Effective Interest Rates - 名义利率和实际利率}
+\subsubsection{Nominal Interest Rate - 名义利率}
+Nominal interest rate (名义利率) 是利息的百分比, 它不考虑复利的次数。计算公式如下: 
+\begin{equation}
+    r_{\text{nominal}} = \frac{I}{P \cdot t} \times 100\%
+\end{equation}
+其中: 
+\begin{itemize}
+    \item $r_{\text{nominal}}$ 是名义利率
+    \item $I$ 是利息
+    \item $P$ 是本金
+    \item $t$ 是时间
+\end{itemize}
+
+例如, 如果名义利率是每年 4\%, 按季度支付利息, 本金为 100, 那么计算如下:
+
+\begin{equation}
+    r_{\text{nominal}} = \frac{I}{P \cdot t} \times 100\% = \frac{4}{100 \cdot 1} \times 100\% = 4\%
+\end{equation}
+
+其中: 
+\begin{itemize}
+    \item $I = 4$ 是利息
+    \item $P = 100$ 是本金
+    \item $t = 1$ 是时间(年)
+\end{itemize}
+
+\subsubsection{Effective Interest Rate - 实际利率}
+Effective interest rate (实际利率) 是利息的百分比, 它考虑复利的次数。计算公式如下: 
+\begin{equation}
+    r_{\text{effective}} = \left(1 + \frac{r}{n}\right)^n - 1
+\end{equation}
+其中: 
+\begin{itemize}
+    \item $r_{\text{effective}}$ 是实际利率
+    \item $r$ 是名义利率
+    \item $n$ 是复利的次数
+\end{itemize}
+
+例如, 如果名义利率是每年 4\%, 按季度支付利息, 那么计算如下:
+\begin{equation}
+    r_{\text{effective}} = \left(1 + \frac{4\%}{4}\right)^4 - 1 = 0.0406 = 4.06\%
+\end{equation}
+
+\subsubsection{Conversation between EI and NI - 实际利率和名义利率的转换}
+实际利率和名义利率之间的转换可以通过下面的公式实现: 
+\begin{subequations}
+    \begin{align}
+        r_{\text{effective}} & = \left(1 + \frac{r_{\text{nominal}}}{n}\right)^n - 1                    \\
+        r_{\text{nominal}}   & = n \left(\left(1 + r_{\text{effective}}\right)^{\frac{1}{n}} - 1\right)
+    \end{align}
+\end{subequations}
+
+\subsection{Annual Compound Rate - 年复利率}
+Annual compound rate (年复利率) 是一年内的复利率。计算公式如下: 
+\begin{equation}
+    r_{\text{annual}} = \left(1 + r_{\text{nominal}} \times \frac{days}{365}\right)^{\frac{365}{days}} - 1
+\end{equation}
+
+例如, 一个5个月(153天)的投资的名义利率是10.2\%, 年复利率计算如下:
+\begin{equation}
+    r_{\text{annual}} = \left(1 + 10.2\% \times \frac{153}{365}\right)^{\frac{365}{153}} - 1 = 0.1 = 10.5038\%
+\end{equation}
+
+以下是$I$的两种等价计算方式:
+\begin{subequations}
+    \begin{align}
+        I & = \left(1 + 10.2\% \times \frac{153}{365}\right) - 1 = 0.042576 \\
+        I & = \left(1 + 10.5038\% \right)^{\frac{153}{365}} - 1 = 0.042576
+    \end{align}
+\end{subequations}
+其中: 
+\begin{itemize}
+    \item $I = 0.042576$ 是利息
+    \item $r_{\text{nominal}} = 10.2\%$ 是名义利率, 不考虑复利
+    \item $r_{\text{annual}} = 10.5038\%$ 是年复利率, 是考虑复利效应后的等效年复利率, 表示如果这个投资按年进行复利, 实际年化的利息收益会略高于名义利率。
+\end{itemize}
+以上两种利率在不同情况下有不同的应用, 但是在计算最终的实际收益(153天)时, 两种利率计算出的利息是相同的。
+
+\subsection{Continuous Compounding - 连续复利}
+Continuous compounding (连续复利) 是一种特殊的复利方式, 它是复利次数无限大的情况。计算公式如下: 
+\begin{equation}
+    A = P \cdot e^{rt}
+\end{equation}
+这个公式的推导过程如下:
+\begin{equation}
+    \begin{aligned}
+        A                                                     & = P \left(1 + \frac{r}{n}\right)^{nt} \\
+        \lim_{n \to \infty} \left(1 + \frac{r}{n}\right)^{nt} & = e^{rt}
+    \end{aligned}
+\end{equation}
+
+连续复利的利率和名义利率之间的转换可以通过下面的公式实现:
+\begin{equation}
+    r_{\text{continuous}} = \ln(1 + r_{\text{nominal}})
+\end{equation}
+
+\subsection{Time Value of Money - 金钱的时间价值}
+\subsubsection{Present Value and Future Value - 现值和未来价值}
+现值 (Present Value) 是指在现在某个时间点的资金价值。
+未来价值 (Future Value) 是指在未来某个时间点的资金价值。
+对于不同的复利方式, 未来价值的计算公式如下:
+\begin{itemize}
+    \item 单利:
+          \begin{equation}
+              FV = PV(1 + i \cdot \frac{days}{365})
+          \end{equation}
+    \item 复利:
+          \begin{equation}
+              FV = PV(1 + i_{c})^{\frac{days}{365}}
+          \end{equation}
+    \item 连续复利:
+          \begin{equation}
+              FV = PV \cdot e^{i_{cc} \cdot \frac{days}{365}}
+          \end{equation}
+\end{itemize}
+
+对于短期投资:
+\begin{equation}
+    Simple Yield = \frac{FV - PV}{PV} * \frac{365}{days}
+\end{equation}
+\begin{equation}
+    \begin{aligned}
+        Compound Yield & = \left(1 + Simple Yield \cdot \frac{days}{365}\right)^{\frac{365}{days}} - 1 \\
+        Compound Yield & = \left(\frac{FV}{PV}\right)^{\frac{365}{days}} - 1
+    \end{aligned}
+\end{equation}
+
+对于长期投资:
+\begin{equation}
+    FV = PV \cdot (1 + i_{c})^{\frac{days}{365}}
+\end{equation}
+\begin{equation}
+    Compound Yield = (\frac{FV}{PV})^{\frac{365}{days}} - 1
+\end{equation}
+
+
+\subsubsection{Discount Factor - 折现因子}
+折现因子 (Discount Factor) 是指未来现金流的现值。计算公式如下:
+\begin{equation}
+    Discont Factor = \frac{PV}{FV}
+\end{equation}
+
+对于不同的复利方式, 折现因子的计算公式如下:
+\begin{itemize}
+    \item 单利:
+          \begin{equation}
+              Discont Factor = \frac{1}{1 + i \cdot \frac{days}{365}}
+          \end{equation}
+    \item 复利:
+          \begin{equation}
+              Discont Factor = \frac{1}{(1 + i_{c})^{\frac{days}{365}}}
+          \end{equation}
+    \item 连续复利:
+          \begin{equation}
+              Discont Factor = \frac{1}{e^{i_{cc} \cdot \frac{days}{365}}}
+          \end{equation}
+\end{itemize}
+
+\subsubsection{Net Present Value - 净现值}
+净现值 (Net Present Value) 是指未来现金流的现值减去投资的现值。考虑一个Cash Flow的序列:
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Year & Cash Flow \\
+        \hline
+        1   & +83\$ \\
+        \hline
+        2   & -10\$ \\
+        \hline
+        3   & +150\$ \\
+        \hline
+    \end{tabular}
+\end{table}
+Assume the discount rate is 7.5\%, then the NPV is:
+\begin{equation}
+    \begin{aligned}
+        NPV & = \frac{83}{1 + 0.075} + \frac{-10}{(1 + 0.075)^2} + \frac{150}{(1 + 0.075)^3} \\
+        NPV & \approx 189.3
+    \end{aligned}
+\end{equation}
+
+\subsubsection{Internal Rate of Return - 内部回报率}
+内部回报率(英文: internal rate of return, 缩写: IRR)又称年化回报率, 是一种投资的评估方法, 也就是找出资产潜在的回报率, 其原理是利用内部回报率折现, 投资的净现值恰好等于零。内部收益率(IRR)衡量投资的收益率。 “内部”一词是指内部利率不包括外部因素, 如通货膨胀, 资本成本或各种金融风险。
+
+IRR满足下面的条件:
+\begin{equation}
+    \sum_{i=0}^{n} \frac{CF_i}{(1 + IRR)^i} = 0
+\end{equation}
+其中:
+\begin{itemize}
+    \item $CF_i$ 是第 $i$ 年的净现金流量
+    \item $IRR$ 是内部回报率
+    \item $n$ 是方案计算期数
+\end{itemize}
+
+例如, 初期投资为85000, 每年收益为20000, 且持续 5 年, 那么IRR的计算如下:
+\begin{equation}
+    \begin{aligned}
+     & \because \frac{20000}{1 + IRR} + \frac{20000}{(1 + IRR)^2} + \frac{20000}{(1 + IRR)^3} + \frac{20000}{(1 + IRR)^4} + \frac{20000}{(1 + IRR)^5} - 85000 = 0 \\
+     & \therefore IRR \approx 5.67\%
 \end{aligned}
-\]
+\end{equation}
 
-\section{Nominal Interest Rate and Effective Interest Rate - 名义利率和实际利率}
+\subsection{Examples - 例题}
+\begin{enumerate}
+    \item 5\% is the nominal interest rate quoted for a 1-year deposit when the
+          interest is paid all at maturity. What is the quarterly equivalent rate?
 
-名义利率是指在一定时间内的利息，实际利率是指在一定时间内的实际收益。
+          注意: \textbf{Paid all at maturity (到期支付)} 的意思是利息在到期时一次性支付。
 
-Consider: 4\% compounded annually and quarterly interest rate payments
+          这里的问题是从名义年利率转化到等价季度利率, 如果考虑复利的次数是一年 4 次, 计算过程如下:
+          \begin{equation}
+              \begin{aligned}
+                  1 + 5\%                                        & = \left(1 + \frac{r}{4}\right)^4                               \\
+                  \Rightarrow \left(1 + 5\%\right)^{\frac{1}{4}} & = 1 + \frac{r}{4}                                              \\
+                  \Rightarrow \frac{r}{4}                        & = \left(1 + 5\%\right)^{\frac{1}{4}} - 1                       \\
+                  \Rightarrow r                                  & = 4 \times \left(\left(1 + 5\%\right)^{\frac{1}{4}} - 1\right) \\
+                  \Rightarrow r                                  & \approx 4.92\%
+              \end{aligned}
+          \end{equation}
 
-\[
-\begin{aligned}
-    Total\ Return &= Principal \times \left(1 + \frac{4\%}{4}\right)^4
-\end{aligned}
-\]
+    \item Equivalent rate With daily compounding for an annual rate of 9.3\%
+          \begin{equation}
+              \begin{aligned}
+                  1 + 9.3\%                                          & = \left(1 + \frac{r}{365}\right)^{365}                               \\
+                  \Rightarrow \left(1 + 9.3\%\right)^{\frac{1}{365}} & = 1 + \frac{r}{365}                                                  \\
+                  \Rightarrow \frac{r}{365}                          & = \left(1 + 9.3\%\right)^{\frac{1}{365}} - 1                         \\
+                  \Rightarrow r                                      & = 365 \times \left(\left(1 + 9.3\%\right)^{\frac{1}{365}} - 1\right) \\
+                  \Rightarrow r                                      & \approx 8.894\%
+              \end{aligned}
+          \end{equation}
 
-\[
-\begin{aligned}
-    1 + Effective\ Interest\ Rate &= \left(1 + \frac{Nominal\ Interest\ Rate}{n}\right)^n
-\end{aligned}
-\]
+    \item Equivalent rate with continuous compounding for an annual rate of 9.3\%
+          \begin{equation}
+              \begin{aligned}
+                  A                     & = P \cdot e^{rt} \\
+                  \Rightarrow 1 + 9.3\% & = e^{r}          \\
+                  \Rightarrow r         & = \ln(1 + 9.3\%) \\
+                  \Rightarrow r         & \approx 8.8926\%
+              \end{aligned}
+          \end{equation}
 
-$n$ means the number of compounding periods in a year - 年复利次数
+    \item I invest \$138 now. After 64 days I receive back a total of \$139.58. What is my (simple) yield on this investment?
+            \begin{equation}
+                \begin{aligned}
+                    Simple Yield & = \frac{FV - PV}{PV} \times \frac{365}{days} \\
+                    Simple Yield & = \frac{139.58 - 138}{138} \times \frac{365}{64} \\
+                    Simple Yield & \approx 6.53\%
+                \end{aligned}
+            \end{equation}
 
-\section{Annually Compounded Interest - 年复利}
+    \item What is the 3-year discount factor based on a 3-year interest rate of 8.5\% compounded annually?
+          \begin{equation}
+              Discont Factor = \frac{1}{(1 + 8.5\%)^3} = \frac{1}{1.085^3} \approx 0.7829
+            \end{equation}
+          What is the present value of \$1000 to be received in 3 years?
+            \begin{equation}
+                PV = 1000 \times 0.7829 \approx 782.9
+            \end{equation}
 
-\[
-\begin{aligned}
-    Annual\ Compound\ Interest &= Principal \times \left(1 + Nominal\ Interest\ Rate\right)^{years} - Principal \\
-    Annual\ Compound\ Interest\ Rate &= \left(1 + Nominal\ Interest\ Rate\right)^{years} - 1
-\end{aligned}
-\]
+\end{enumerate}
 
-\[
-\begin{aligned}
-    Annual\ Compound\ Interest &= Principal \times \left(1 + Nominal\ Interest\ Rate \times \frac{days}{years}\right)^{\frac{years}{days}} - Principal \\
-    Annual\ Compound\ Interest\ Rate &= \left(1 + Nominal\ Interest\ Rate \times \frac{days}{years}\right)^{\frac{years}{days}} - 1
-\end{aligned}
-\]
-
-\section{Continuous Compounding - 连续复利}
-
+\newpage

@@ -10,6 +10,13 @@
 \usepackage{tocloft}   % Customizing table of contents
 \usepackage{hyperref}  % For hyperlinks
 \usepackage{ctex}      % For Chinese characters
+\usepackage{listings}  % For code listings
+\usepackage{color}     % For color in code listings
+\usepackage{float}     % For floating figures
+\usepackage{amssymb}   % For additional math symbols
+
+% set equation numbering to section level
+\numberwithin{equation}{section}
 
 % set date language to en-US
 \usepackage[english]{babel}
@@ -20,9 +27,13 @@
 % Set header and footer
 \pagestyle{fancy}
 \fancyhf{}  % Clear all header and footer fields
-\fancyhead[L]{\includegraphics[width=0.2\textwidth]{./img/HKU.png}}  % Add logo to the left of the header
+\fancyhead[L]{\includegraphics[width=0.166\textwidth]{./img/HKU.png}}  % Add logo to the left of the header
 \fancyhead[C]{\rightmark}  % Add current section title and number in the center of the header
 \fancyfoot[C]{\thepage}  % Page number in the center of the footer
+
+% Adjust headheight and topmargin
+\setlength{\headheight}{25.27397pt}
+\addtolength{\topmargin}{-4.3348pt}
 
 % Ensure section marks are shown in the right format
 \renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
@@ -33,6 +44,8 @@
     \includegraphics[width=0.5\textwidth]{./img/HKU.png} \\ % Insert logo at the top of title page
     \vspace{1cm}  % Add some vertical space between logo and title
     COMP 7308A - Introduction to Financial Computing \\ % Title text
+    \vspace{1cm}
+    \textit{Course Notes}  % Subtitle text
 }
 \author{Bai Junhao}
 \date{\today}
@@ -58,8 +71,11 @@
 % Start page numbering from here
 \pagenumbering{arabic}
 \setcounter{page}{1}
+% set page style to fancy
+\pagestyle{fancy}
 
 % Include the content from the file
 \input{01-BasicFinancialArithmetic}
+\input{02-MoneyMarket.tex}
 
 \end{document}
