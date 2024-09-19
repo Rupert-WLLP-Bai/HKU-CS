@@ -1,0 +1,44 @@
+# LaTeX intermediate files
+*.aux
+*.bbl
+*.blg
+*.brf
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.lot
+*.out
+*.toc
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.fls
+*.fdb_latexmk
+
+# LaTeX editor files
+*.synctex.gz
+*.synctex(busy)
+*.pdfsync
+
+# Backup files
+*~
+*.bak
+*.sav
+*.backup
+
+# Generated files
+*.dvi
+*.ps
+*.pdf
+*.xdv
+
+# Other files
+*.nav
+*.snm
+*.vrb
+*.run.xml

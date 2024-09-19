@@ -1,0 +1,62 @@
+\section{Motion}
+
+\subsection{State Space Formulation - 状态空间表达}
+
+\subsection{Linear time invariant systems - 线性时不变系统}
+\begin{equation}
+\begin{aligned}
+\dot{x} &= Ax + Bu \\
+y &= Cx
+\end{aligned}
+\end{equation}
+
+以上是一个线性时不变系统的状态空间表达。其中，$x$是状态向量，$u$是输入向量，$y$是输出向量。$A$是状态转移矩阵，$B$是输入矩阵，$C$是输出矩阵。
+
+\begin{equation}
+\begin{aligned}
+    x \exists \mathbb{R}^n, u \exists \mathbb{R}^m, y \exists \mathbb{R}^p \\
+    A: n \times n, B: n \times m, C: p \times n
+    \end{aligned}
+\end{equation}
+
+\subsection{Standard form dynamics - 标准形式动力学}
+
+\subsubsection{Car Model}
+\begin{equation}
+    \dot{v} =  \frac{c}{m} u - \gamma v
+\end{equation}
+其中:
+\begin{itemize}
+    \item $v$是速度
+    \item $u$是输入 (油门)
+    \item $c$是车辆的加速度
+    \item $m$是车辆的质量
+    \item $\gamma$是阻尼系数
+\end{itemize}
+
+把这个方程转换成标准形式:
+\begin{equation}
+    \begin{aligned}
+        x = \begin{bmatrix} p \\ v \end{bmatrix} \\
+        A = \begin{bmatrix} 0 & 1 \\ 0 & -\gamma \end{bmatrix} \\
+        B = \begin{bmatrix} 0 \\ \frac{c}{m} \end{bmatrix} \\
+        C = \begin{bmatrix} 1 & 0 \end{bmatrix}
+    \end{aligned}
+\end{equation}
+
+\subsection{State-space model for non-linear case: pendulum - 非线性状态空间模型: 摆}
+
+\begin{equation}
+    \ddot{\theta} = -\frac{g}{l} \sin(\theta) + cu
+\end{equation}
+
+其中:
+\begin{itemize}
+    \item $\theta$是摆的角度
+    \item $u$是输入 (力)
+    \item $g$是重力加速度
+    \item $l$是摆的长度
+    \item $c$是摆的阻尼系数
+\end{itemize}
+
+
