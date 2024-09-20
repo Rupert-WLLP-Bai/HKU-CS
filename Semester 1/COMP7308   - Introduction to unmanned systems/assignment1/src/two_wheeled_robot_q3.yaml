@@ -1,0 +1,15 @@
+world:
+  height: 5  # the height of the world
+  width: 5   # the height of the world
+  step_time: 0.01  # 100Hz calculate each step
+  sample_time: 0.1  # 10Hz for render and data extraction 
+  offset: [0, 0] # the offset of the world on x and y 
+
+robots:
+  type: 'robot_custom'  # # robot_omni, robot_diff, robot_acker
+  number: 1
+  state: [0.5, 2, 1.57079633]  
+  radius: 0.25
+  goal: [4.5, 2, 1.57079633]
+  goal_threshold: 0.05
+  arrive_mode: 'state'
