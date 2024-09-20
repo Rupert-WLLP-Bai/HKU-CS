@@ -1,3 +1,5 @@
+# Date: 2024/09/20
+
 import numpy as np
 import matplotlib as mpl
 from math import sin, cos, atan2, inf, pi
@@ -6,7 +8,7 @@ import copy
 
 class RobotTwoWheel(RobotBase):
 
-	student_id = None
+	student_id = 3036382909 # Bai Junhao
 
 	robot_type = 'custom'
 	appearance = 'circle'
@@ -39,7 +41,17 @@ class RobotTwoWheel(RobotBase):
 			return self.dynamics_with_linear_noise(state_, vel_, **kwargs)
 		else:
 			return self.dynamics_with_nonlinear_noise(state_, vel_, **kwargs)
-
+	
+	# function to calculate ICR
+	def calculate_ICR(self, state, vel):
+		omega1, omega2 = vel[0, 0], vel[1, 0]
+		r_ICR = (omega2 + omega1) / (omega2 - omega1) * self.radius
+		theta = state[2, 0]
+		# calculate ICR_x, ICR_y
+		ICR_x = state[0, 0] + r_ICR * sin(theta)
+		ICR_y = state[1, 0] - r_ICR * cos(theta)
+		return ICR_x, ICR_y
+  
 	def dynamics_without_noise(self, state, vel, **kwargs):
 		r"""
 		Question 1
@@ -60,10 +72,35 @@ class RobotTwoWheel(RobotBase):
 		l  = self.radius
 		
 		"*** YOUR CODE STARTS HERE ***"
-		
-
-
-
+		# get x, y, theta
+		x, y, theta = state[0, 0], state[1, 0], state[2, 0]
+		# calculate omega0
+		omega0 = (vel[0, 0] - vel[1, 0]) * r / (2 * l)
+		# if omega0 is 0, then the robot moves straight forward 
+		# then we don't need to calculate ICR
+		if omega0 == 0:
+			next_state = np.zeros((3, 1))
+			next_state[0, 0] = x + vel[0, 0] * cos(theta) * dt
+			next_state[1, 0] = y + vel[1, 0] * sin(theta) * dt
+			next_state[2, 0] = theta
+			return next_state
+		else:
+			# calculate ICR
+			ICR = self.calculate_ICR(state, vel)
+			# matrix1 for rotation
+			matrix1 = np.array([[cos(omega0 * dt), -sin(omega0 * dt), 0],
+								[sin(omega0 * dt), cos(omega0 * dt), 0],
+								[0, 0, 1]])
+			# matrix2
+			matrix2 = np.array([x - ICR[0], y - ICR[1], theta])
+			# matrix3
+			matrix3 = np.array([ICR[0], ICR[1], omega0 * dt])
+			# calculate next_state
+			next_state = np.zeros((3, 1))
+			result = np.dot(matrix1, matrix2) + matrix3
+			next_state[0, 0] = result[0]
+			next_state[1, 0] = result[1]
+			next_state[2, 0] = result[2]
 		"*** YOUR CODE ENDS HERE ***"
 		return next_state
 
@@ -92,8 +129,21 @@ class RobotTwoWheel(RobotBase):
 		noise = np.random.normal(0, R)
 		
 		"*** YOUR CODE STARTS HERE ***"
-		
+		# Before the motion function, we add the Gaussian noise to omega and theta 2(b)
+		# pass
+	
+  		# perform the motion function without noise
+		state_without_noise = self.dynamics_without_noise(state, vel)
 
+		# 2(a)
+		# After the motion function, we add the Gaussian noise to x, y, and theta
+		next_state = np.zeros((3, 1))
+		# add noise to x
+		next_state[0, 0] = state_without_noise[0, 0] + noise[0]
+		# add noise to y
+		next_state[1, 0] = state_without_noise[1, 0] + noise[1]
+		# add noise to theta
+		next_state[2, 0] = state_without_noise[2, 0] + noise[2]
 
 		"*** YOUR CODE ENDS HERE ***"
 		
@@ -124,9 +174,33 @@ class RobotTwoWheel(RobotBase):
 		noise = np.random.normal(0, R)
 		
 		"*** YOUR CODE STARTS HERE ***"
+		# Before the motion function, we add the Gaussian noise to omega and theta 2(b)
+		# pass
+		# get omega1, omega2
+		omega1, omega2 = vel[0, 0], vel[1, 0]
+		# add noise to omega1 and omega2
+		omega1 += noise[0]
+		omega2 += noise[0]
+
+		# get theta
+		theta = state[2, 0]
+		# add noise to theta
+		theta += noise[1]
+		# change state
+		state[2, 0] = theta
+
+		# change vel to omega1 and omega2
+		self.vel = np.c_[[omega1, omega2]]
+
+		# perform the motion function without noise
+		state_without_noise = self.dynamics_without_noise(state, self.vel)
+  
+		# form up next_state
+		next_state = np.zeros((3, 1))
+		next_state[0, 0] = state_without_noise[0, 0]
+		next_state[1, 0] = state_without_noise[1, 0]
+		next_state[2, 0] = state_without_noise[2, 0]
 		
-
-
 		"*** YOUR CODE ENDS HERE ***"
 		
 		return next_state
@@ -159,9 +233,37 @@ class RobotTwoWheel(RobotBase):
 		
 		"*** YOUR CODE STARTS HERE ***"
 
-
-
+		# Initial and goal states
+		x_start, y_start, theta_start = 0.5, 2.0, np.pi / 2
+		x_goal, y_goal, theta_goal = 4.5, 2.0, np.pi / 2
 		
+		# Calculate the angle and distance
+		theta_turn = np.pi / 2
+		distance = x_goal - x_start
+
+		# Step 1: Turn right for 90 degrees
+		omega1 = -np.pi / 2
+		omega2 = +np.pi / 2
+		instructions.append([omega1, omega2])
+		timepoints.append(theta_turn / abs(omega1-omega2)/2)
+		# path_length += l * theta_turn
+
+		# Step 2: Move forward
+		omega1 = 2
+		omega2 = 2
+		instructions.append([omega1, omega2])
+		timepoints.append(distance / (omega1)*r)
+		path_length += distance
+  
+		# Step 3: Turn left for 90 degrees	
+		omega1 = +np.pi / 2
+		omega2 = -np.pi / 2
+		instructions.append([omega1, omega2])
+		timepoints.append(theta_turn / abs(omega1-omega2)/2)
+		
+		# TODO: why not add the length of rotation to path_length?
+		# path_length += l * theta_turn
+
 		"*** YOUR CODE ENDS HERE ***"
 		
 		return instructions, timepoints, path_length
