@@ -1,0 +1,95 @@
+% date: 2024-09-21
+% Author: Bai Junhao
+% Email: bjh2001@connect.hku.hk
+% The University of Hong Kong
+
+\documentclass{article}
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+
+% Import necessary packages
+\usepackage{amsmath}  % For mathematical expressions
+\usepackage{amssymb}  % Additional math symbols
+\usepackage{geometry}  % Set page geometry
+\usepackage{graphicx}  % For adding images
+\usepackage{fancyhdr}  % For custom headers and footers
+\usepackage{titlesec}  % Control over title formatting
+\usepackage{tocloft}   % Customizing table of contents
+\usepackage{hyperref}  % For hyperlinks
+\usepackage{ctex}      % For Chinese characters
+\usepackage{color}     % For color in code listings
+\usepackage{float}     % For floating figures
+\usepackage{amssymb}   % For additional math symbols
+\usepackage{listings}  % For code listings
+\usepackage{enumitem}  % For customizing lists
+
+% set equation numbering to section level
+\numberwithin{equation}{section}
+
+% set date language to en-US
+\usepackage[english]{babel}
+
+% Set page geometry
+\geometry{a4paper, margin=1in}
+
+% Set header and footer
+\pagestyle{fancy}
+\fancyhf{}  % Clear all header and footer fields
+\fancyhead[L]{\includegraphics[width=0.2\textwidth]{./img/HKU.png}}  % Add logo to the left of the header
+\fancyhead[C]{\rightmark}  % Add current section title and number in the center of the header
+\fancyfoot[C]{\thepage}  % Page number in the center of the footer
+
+% Adjust headheight and topmargin
+\setlength{\headheight}{25.27397pt}
+\addtolength{\topmargin}{-4.3348pt}
+
+% Ensure section marks are shown in the right format
+\renewcommand{\sectionmark}[1]{\markright{\thesection\ #1}}
+
+% Table caption and label formatting
+\numberwithin{table}{section}
+\numberwithin{figure}{section}
+
+
+% Title setup
+\title{
+    \vspace{6cm}
+    COMP 7503B - Multimedia technologies\\
+    \vspace{0.5cm}
+    \text{Assignment 1B}  % Subtitle text
+    \vspace{1cm}
+}
+\author{Bai Junhao - 3036382909}  % Author
+\date{\today}
+
+% Reset page numbering after title page
+\pagestyle{plain}
+\begin{document}
+
+% Title page
+\maketitle
+\thispagestyle{empty}  % No page number on title page
+
+\newpage
+
+% Table of Contents
+\tableofcontents
+% set page numbering to roman
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+\newpage
+
+% Start page numbering from here
+\pagenumbering{arabic}
+\setcounter{page}{1}
+% set page style to fancy
+\pagestyle{fancy}
+
+% Include the content from the file
+\input{Question1}
+\input{Question2}
+\input{Question3}
+\input{Question4}
+
+\end{document}
