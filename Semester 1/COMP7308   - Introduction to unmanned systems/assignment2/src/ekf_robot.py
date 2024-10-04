@@ -7,7 +7,7 @@ from ir_sim.util.util import get_transform, WrapToPi
 
 class RobotEKF(RobotBase):
 
-	student_id = None
+	student_id = 3036382909 # Bai Junhao
 
 	
 	robot_type = 'custom'
@@ -68,7 +68,21 @@ class RobotEKF(RobotBase):
 		noise  = np.random.normal(0, R_hat)
 
 		"*** YOUR CODE STARTS HERE ***"
-		
+		# Step 1 - Get all the variables
+		x, y, theta = state[0, 0], state[1, 0], state[2, 0]
+		v, omega = vel[0, 0], vel[1, 0]
+		epsilon_x, epsilon_y, epsilon_theta = noise[0], noise[1], noise[2]
+
+		# Step 2 - Compute
+		x_next = x + dt * v * cos(theta) + epsilon_x
+		y_next = y + dt * v * sin(theta) + epsilon_y
+		theta_next = theta + dt * omega + epsilon_theta
+
+		# Step 3 - Update the next state
+		next_state = np.zeros((3, 1))
+		next_state[0, 0] = x_next
+		next_state[1, 0] = y_next
+		next_state[2, 0] = theta_next
 
 
 		"*** YOUR CODE ENDS HERE ***"
@@ -97,16 +111,29 @@ class RobotEKF(RobotBase):
 		sigma = self.e_state['std']
 		
 		"*** YOUR CODE STARTS HERE ***"
-		# Compute the Jacobian of g called G with respect to the state
+		# Step 1 - Get all the variables
+		x, y, theta = mu[0, 0], mu[1, 0], mu[2, 0]
+		v, omega = vel[0, 0], vel[1, 0]
+
 		
+		# Compute the Jacobian of g called G with respect to the state
+		G = np.array([
+			[1, 0, -v * dt * np.sin(theta)],
+			[0, 1,  v * dt * np.cos(theta)],
+			[0, 0, 1]
+		])
 
 
 		# Compute the mean 
-		
+		mu_bar = mu + np.array([
+			[v * dt * np.cos(theta)],
+			[v * dt * np.sin(theta)],
+			[omega * dt]
+    	])
 
 
 		# Compute the covariance matrix
-		
+		sigma_bar = G @ sigma @ G.T + R
 
 		"*** YOUR CODE ENDS HERE ***"
 		self.e_state['mean'] = mu_bar
@@ -147,21 +174,36 @@ class RobotEKF(RobotBase):
 		for lm in lm_measurements:
 			# Update mu_bar and sigma_bar with each measurement individually,
 			"*** YOUR CODE STARTS HERE ***"
+			# Get landmark position
+			lm_id = lm['id']
+			lm_range = lm['range']
+			lm_pos = lm_map[lm_id]
+			lm_x, lm_y = lm_pos[0], lm_pos[1]
 			
-			# Calculate the expected measurement vector
-			
+			# Extract the current state (mean) as scalars
+			x = mu_bar[0, 0]
+			y = mu_bar[1, 0]
+			theta = mu_bar[2, 0]
 
+			# Calculate the expected measurement vector
+			r_exp = np.sqrt((lm_x - x) ** 2 + (lm_y - y) ** 2)
 
 			# Compute H
-			
-
+			if r_exp != 0:  # Avoid division by zero
+				H = np.array([-(lm_x - x) / r_exp, -(lm_y - y) / r_exp, np.zeros(1)]).T # The shape of H is 1x3
+			else:
+				H = np.array([0.0, 0.0, 0.0]).T # The shape of H is 1x3
 
 			# Gain of Kalman
-			
-
+			K = sigma_bar @ H.T @ np.linalg.inv(H @ sigma_bar @ H.T + Q)			
 
 			# Kalman correction for mean_bar and covariance_bar
+			mu_bar = mu_bar + K @ (np.array([[lm_range]]) - np.array([[r_exp]]))
+			sigma_bar = (np.eye(3) - K @ H) @ sigma_bar
 			
+			# NOTE: Reshape the mean and covariance matrix
+			mu_bar = mu_bar.reshape(3, 1)
+			sigma_bar = sigma_bar.reshape(3, 3)
 
 
 			"*** YOUR CODE ENDS HERE ***"
@@ -206,28 +248,55 @@ class RobotEKF(RobotBase):
 		for lm in lm_measurements:
 			# Update mu_bar and sigma_bar with each measurement individually,
 			"*** YOUR CODE STARTS HERE ***"
+			# Get landmark position
+			lm_id = lm['id']
+			lm_range = lm['range']
+			lm_angle = lm['angle']
+			lm_pos = lm_map[lm_id]
+			lm_x, lm_y = lm_pos[0], lm_pos[1]
+
+			# Extract the current state (mean) as scalars
+			x = mu_bar[0, 0]
+			y = mu_bar[1, 0]
+			theta = mu_bar[2, 0]
 
 			# Calculate the expected measurement vector
-			
+			r_exp = np.sqrt((lm_x - x) ** 2 + (lm_y - y) ** 2)
+			bearing_exp = np.arctan2(lm_y - y, lm_x - x) - theta
 
+			# Measurement vector
+			z_exp = np.array([r_exp, bearing_exp])
 
 			# Compute H
-			
+			H = np.zeros((2, 3))
+			if r_exp != 0:
+				H[0, 0] = -(lm_x - x) / r_exp
+				H[0, 1] = -(lm_y - y) / r_exp
+				H[1, 0] = (lm_y - y) / (r_exp ** 2)
+				H[1, 1] = -(lm_x - x) / (r_exp ** 2)
+				H[1, 2] = -1
 
+
+			# Measurement innovation
+			z = np.array([[lm_range], [lm_angle]])
+			y_tilde = z - z_exp
+
+			# Normalize the innovation for bearing
+			y_tilde[1, 0] = WrapToPi(y_tilde[1, 0])
 
 			# Gain of Kalman
-			
-
+			S = H @ sigma_bar @ H.T + Q  # Innovation covariance
+			K = sigma_bar @ H.T @ np.linalg.inv(S)  # Kalman gain
 
 			# Kalman correction for mean_bar and covariance_bar
-			
-
+			mu_bar = mu_bar + K @ y_tilde
+			sigma_bar = (np.eye(3) - K @ H) @ sigma_bar
 
 			"*** YOUR CODE ENDS HERE ***"
 			pass
 		mu = mu_bar
 		sigma = sigma_bar
-		self.e_state['mean'] = mu
+		self.e_state['mean'] = mu 
 		self.e_state['std'] = sigma
 	
 	
