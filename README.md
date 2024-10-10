@@ -11,6 +11,11 @@
 | 2          | 2024-10-3 | 2024-10-4 | 2024-10-17 | Y         |       |
 
 ### COMP7409A - Machine learning in trading and finance
+
+| Assignment | Opened    | Finished  | Deadline   | Submitted | Grade |
+| ---------- | --------- | --------- | ---------- | --------- | ----- |
+| 1          | 2024-10-8 | 2024-10-9 | 2024-11-2  | Y         |       |
+
 ### COMP7503B - Multimedia technologies
 
 | Assignment | Opened    | Finished  | Deadline   | Submitted | Grade |
