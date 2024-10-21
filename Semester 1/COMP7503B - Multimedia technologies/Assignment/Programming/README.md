@@ -16,8 +16,50 @@ corresponding implementation details.
 
 # Environment Setup:
 
-1. Setup a DevContainer in VSCode
+**WSL2 needs to be installed on Windows**
 
-2. Install Node-RED and MongoDB
+1. Pull the docker images for Node-RED and MongoDB
 
-3. 
+```bash
+docker pull nodered/node-red
+docker pull mongo:latest
+```
+
+2. Run Node-RED Container
+
+```bash
+sudo mkdir /opt/node_red
+sudo chmod 777 /opt/node_red
+sudo docker run -itd -p 1880:1880 -v /opt/node_red:/data --name nodered nodered/node-red
+```
+
+Then access Node-RED at `http://localhost:1880`
+
+3. Run MongoDB Container
+
+```bash
+sudo mkdir /opt/mongodb
+sudo chmod 777 /opt/mongodb
+sudo docker run -itd -p 27017:27017 -v /opt/mongodb:/data/db --name Mymongo mongo:latest
+```
+
+```bash
+sudo docker exec -it Mymongo bash
+mongosh
+
+use admin
+db.createUser({user: "admin", pwd: "admin", roles: [{role: "root", db: "admin"}]});
+exit
+```
+
+4. Install the required Node-RED packages
+
+```bash
+sudo docker exec -it nodered bash
+npm install node-red-dashboard # For the dashboard ui_chart which is not preinstalled
+npm install node-red-contrib-mongodb3 
+```
+
+5. Import the Node-RED flow
+6. Deploy the Node-RED flow
+7. Access the dashboard at `http://localhost:1880/ui`

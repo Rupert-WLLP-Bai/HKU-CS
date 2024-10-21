@@ -1,1 +1,22 @@
 \section{Money Market - 金融市场}
+
+\subsection{CDs - 存单}
+\begin{equation}
+    \begin{aligned}
+        Maturity\ Proceeds &= Face\ Value \times (1 + coupon\ rate \times \frac{t}{360}) \\
+        Price &= \frac{Maturity\ Proceeds}{(1 + interest\ rate \times \frac{t}{360})} \\
+        Yield &= (\frac{FV}{PV} - 1) \times \frac{360}{t}  \\
+        Yield &= \frac{sale\ price - purchase\ price}{purchase\ price} \times \frac{360}{t} \\ 
+        Yield &= (\frac{(1 +interest\ rate_{purchase} \times \frac{t}{360})}{(1 + interest\ rate_{sale} \times \frac{t}{360})} - 1) \times \frac{360}{t}
+    \end{aligned}
+\end{equation}
+
+\begin{equation}
+    \begin{aligned}
+        Price &= \frac{Face\ Value}{1 + Yield \times \frac{t}{360}} \\
+        Discount\ Rate &= \frac{Face\ Value - Price}{Face\ Value} \times \frac{360}{t} \\
+        Discount\ Rate &= \frac{Yield}{1 + Yield \times \frac{t}{360}} \\
+        Yield &= \frac{Discount\ Rate}{1 - Discount\ Rate \times \frac{t}{360}} \\
+        Yield &= \frac{Face\ Value - Price}{Price} \times \frac{360}{t} \\
+    \end{aligned}
+\end{equation}
