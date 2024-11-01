@@ -119,9 +119,7 @@ class RobotFastSLAM(RobotBase):
 		seed = self.e_rng
 		for particle in self.particles:
 			"*** YOUR CODE STARTS HERE ***"
-
-			
-
+			particle.state = self.motion_model(particle.state, vel, dt, R_t, seed) # Update the state of particle
 			"*** YOUR CODE ENDS HERE ***"
 			pass
 		return
@@ -167,16 +165,10 @@ class RobotFastSLAM(RobotBase):
 					# Initialise mean and covariance of landmark lm_id
 					"*** YOUR CODE STARTS HERE ***"
 					# Initialise mean, at line 7
-					
-
 
 					# Calculate Jacobian related to landmark, at line 8
-					
-
 
 					# Initialise corvariance, at line 9
-					
-
 
 					# Remain default importance weight (skip), at line 10
 					"*** YOUR CODE ENDS HERE ***"
@@ -189,27 +181,19 @@ class RobotFastSLAM(RobotBase):
 					# and update importance weight
 					"*** YOUR CODE STARTS HERE ***"
 					# Measurement prediction, at line 12
-					
-
 
 					# Calculate Jacobian, at line 13
-					
 
 					# Measurement covariance, at line 14
 
-
 					# Calculate Kalman gain, at line 15
-
 
 					# Update mean, at line 16
 
-
 					# Update covariance, at line 17
-					
 
 					# Calculate importance factor w, at line 18
 					w = 1 # Rewrite this line or update w after
-					
 
 					"*** YOUR CODE ENDS HERE ***"
 					particle.weight *= w
