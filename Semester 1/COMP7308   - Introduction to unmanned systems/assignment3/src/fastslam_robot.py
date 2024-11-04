@@ -28,6 +28,7 @@ class Particle:
         self.landmarks = landmarks
 
 class RobotFastSLAM(RobotBase):
+	student_id = 3036382909 # Bai Junhao
 
 	robot_type = 'custom'
 	appearance = 'circle'
@@ -257,6 +258,9 @@ class RobotFastSLAM(RobotBase):
 		# Here you should:
 		# Check whether the resampling requirement is met,
 		# Assign the result to 'requirement'.
+		effective_sample_size = 1 / sum(particle.weight**2 for particle in self.particles)
+		divisor = 1.5 # D = 1.5 as suggested in the lecture
+		requirement = effective_sample_size < self.num_particle / divisor
 		
 
 		"*** YOUR CODE ENDS HERE ***"
@@ -275,14 +279,18 @@ class RobotFastSLAM(RobotBase):
 				# generate new particles using the low variance sampler
 				# and add it to 'new_particles'.
 				# Find the id of the new particle, at line 7-10
-				
-
-
+				U = r + j * step
+				while U > c:
+					i += 1
+					c += self.particles[i].weight
 				# At line 12
 				# Copy the old particle and add it to 'new_particles'
 				# using copy.deepcopy(old_particle) (example).
 				# You should change the weight to the default weight.
-				
+
+				new_particle = copy.deepcopy(self.particles[i])
+				new_particle.weight = 1.0 / self.num_particle
+				new_particles.append(new_particle)
 
 				
 				"*** YOUR CODE ENDS HERE ***"
