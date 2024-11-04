@@ -165,12 +165,18 @@ class RobotFastSLAM(RobotBase):
 					# Initialise mean and covariance of landmark lm_id
 					"*** YOUR CODE STARTS HERE ***"
 					# Initialise mean, at line 7
-
+					angle = WrapToPi(particle.state[2, 0] + lm['angle'])# alpha + theta_t
+					particle.landmarks[lm_id]['mean'] = particle.state[:2] + np.array([[lm['range'] * cos(angle)], 
+																						[lm['range'] * sin(angle)]])
 					# Calculate Jacobian related to landmark, at line 8
-
+					H_inv = np.array([[cos(angle), -lm['range'] * sin(angle)], 
+									[sin(angle),  lm['range'] * cos(angle)]])
+					
 					# Initialise corvariance, at line 9
-
+					particle.landmarks[lm_id]['std'] = H_inv @ Q_t @ H_inv.T
+     
 					# Remain default importance weight (skip), at line 10
+					w = 1
 					"*** YOUR CODE ENDS HERE ***"
 					particle.landmarks[lm_id]['observed'] = True
 					pass
@@ -180,27 +186,36 @@ class RobotFastSLAM(RobotBase):
 					# Update mean and covariance of landmark lm_id
 					# and update importance weight
 					"*** YOUR CODE STARTS HERE ***"
-					# Measurement prediction, at line 12
+					# Measurement prediction, at line 1
+					delta_x = particle.landmarks[lm_id]['mean'][0, 0] - particle.state[0, 0]
+					delta_y = particle.landmarks[lm_id]['mean'][1, 0] - particle.state[1, 0]
+					q = delta_x**2 + delta_y**2
 
+					z_hat = np.array([[np.sqrt(q)],
+									[WrapToPi(atan2(delta_y, delta_x) - particle.state[2, 0])]])
 					# Calculate Jacobian, at line 13
-
-					# Measurement covariance, at line 14
-
+					H = np.array([[delta_x / np.sqrt(q), delta_y / np.sqrt(q)],
+								[-delta_y / q, delta_x / q]])
+     				# Measurement covariance, at line 14
+					S = H @ particle.landmarks[lm_id]['std'] @ H.T + Q_t
 					# Calculate Kalman gain, at line 15
-
+					K = particle.landmarks[lm_id]['std'] @ H.T @ np.linalg.inv(S)
 					# Update mean, at line 16
-
+					angle_diff = WrapToPi(lm['angle'] - z_hat[1, 0])
+					measurement_residual = np.array([[lm['range'] - z_hat[0, 0]], [angle_diff]])
+					particle.landmarks[lm_id]['mean'] += K @ measurement_residual
 					# Update covariance, at line 17
-
+					particle.landmarks[lm_id]['std'] -= K @ S @ K.T
 					# Calculate importance factor w, at line 18
 					w = 1 # Rewrite this line or update w after
-
+					base = 1 / (2 * np.pi * np.sqrt(np.linalg.det(S)))
+					w = base * np.exp(-0.5 * measurement_residual.T @ np.linalg.inv(S) @ measurement_residual)
 					"*** YOUR CODE ENDS HERE ***"
 					particle.weight *= w
 					pass
 		
 		return
-
+ 
 	def fastslam_particles_normalise_weight(self):
 		# Normalise weight
 		sum_of_weight = sum([p.weight for p in self.particles])
@@ -259,7 +274,6 @@ class RobotFastSLAM(RobotBase):
 				# Here you should:
 				# generate new particles using the low variance sampler
 				# and add it to 'new_particles'.
-
 				# Find the id of the new particle, at line 7-10
 				
 
