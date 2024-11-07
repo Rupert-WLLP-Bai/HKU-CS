@@ -5,16 +5,18 @@
 ### COMP7103C - Data Mining
 ### COMP7308  - Introduction to unmanned systems
 
-| Assignment | Opened    | Finished  | Deadline   | Submitted | Grade |
-| ---------- | --------- | --------- | ---------- | --------- | ----- |
-| 1          | 2024-9-19 | 2024-9-20 | 2024-10-3  | Y         |       |
-| 2          | 2024-10-3 | 2024-10-4 | 2024-10-17 | Y         |       |
+| Assignment | Opened     | Finished  | Deadline   | Submitted | Grade |
+| ---------- | ---------- | --------- | ---------- | --------- | ----- |
+| 1          | 2024-9-19  | 2024-9-20 | 2024-10-3  | Y         |       |
+| 2          | 2024-10-3  | 2024-10-4 | 2024-10-17 | Y         |       |
+| 3          | 2024-10-31 | 2024-11-4 | 2024-11-14 | Y         |       |
 
 ### COMP7409A - Machine learning in trading and finance
 
 | Assignment | Opened    | Finished  | Deadline   | Submitted | Grade |
 | ---------- | --------- | --------- | ---------- | --------- | ----- |
 | 1          | 2024-10-8 | 2024-10-9 | 2024-11-2  | Y         |       |
+| 2          | 2024-11-5 | 2024-11-7 | 2024-11-25 | Y         |       |
 
 ### COMP7503B - Multimedia technologies
 
