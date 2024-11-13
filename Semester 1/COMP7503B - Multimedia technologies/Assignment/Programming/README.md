@@ -60,6 +60,15 @@ npm install node-red-dashboard # For the dashboard ui_chart which is not preinst
 npm install node-red-contrib-mongodb3 
 ```
 
-5. Import the Node-RED flow
-6. Deploy the Node-RED flow
-7. Access the dashboard at `http://localhost:1880/ui`
+5. Create Docker Network
+
+```bash
+docker network create my_custom_network
+docker network connect my_custom_network nodered
+docker network connect my_custom_network Mymongo
+```
+   
+6. Import the Node-RED flow
+7. Deploy the Node-RED flow
+    - Check the docker logs for the Node-RED container to see if the flow is deployed successfully
+8. Access the dashboard at `http://localhost:1880/ui`
