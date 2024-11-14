@@ -1,0 +1,23 @@
+world:
+  height: 10.4  # the height of the world
+  width: 10.4   # the height of the world
+  step_time: 0.1  # 10Hz calculate each step
+  sample_time: 0.1  # 10 Hz for render and data extraction 
+  offset: [-0.2, -0.2] # the offset of the world on x and y 
+
+robots:
+  type: 'robot_custom'  # # robot_omni, robot_diff, robot_acker
+  number: 1
+  state: [1, 1]  
+  # radius: 0.2 # # for diff (default)
+  goal: [9, 9] 
+
+obstacles:
+  - type: 'obstacle_block'  # shapes: [[length, width]]
+    number: 4
+    # distribute: {mode: 'random', rlow: [0.0, 0.0, -3.14], rhigh: [10.0, 10.0, 3.14], distance: 1, shapes: [[0.5, 0.4], [0.4, 0.2]], random_shape: True, shapes_low: [0.1, 0.1], shapes_high: [0.8, 0.8]}
+    distribute: {mode: 'manual', states: [ [5, -0.1, 0], [5, 10.1, 0], [-0.1, 5, 0],  [10.1, 5, 0] ], shapes: [[10.4, 0.2], [10.4, 0.2], [0.2, 10], [0.2, 10]]}
+  
+  - type: 'obstacle_block'  # shapes: [[length, width]]
+    number: 2
+    distribute: {mode: 'manual', states: [ [4, 3, 0], [6, 7, 0]], shapes: [[8, 0.3], [8, 0.3]]}
