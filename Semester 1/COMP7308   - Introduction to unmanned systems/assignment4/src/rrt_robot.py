@@ -119,9 +119,14 @@ class RobotRRT(RobotBase):
 		min_dist = float('inf')
 		for i, node in enumerate(self.nodes):
 			"*** YOUR CODE STARTS HERE ***"
-			
-
-
+			# Calculate the distance between node and x_target
+			state = node[0]
+			dist = np.linalg.norm(state-x_target)
+			if dist < min_dist:
+				# Update min_dist, x_nearest, index_nearest
+				min_dist = dist
+				x_nearest = state
+				index_nearest = i
 			"*** YOUR CODE ENDS HERE ***"
 			pass
 		return x_nearest, index_nearest
@@ -143,7 +148,10 @@ class RobotRRT(RobotBase):
 		expand_dis = self.p_expand_dis
 		x_new = None
 		"*** YOUR CODE STARTS HERE ***"
-		
+		direction = x_rand - x_nearest
+		distance = np.linalg.norm(direction)
+		direction = direction / distance
+		x_new = x_nearest + direction * self.p_expand_dis
 
 		"*** YOUR CODE ENDS HERE ***"
 		return x_new
@@ -214,10 +222,14 @@ class RobotRRT(RobotBase):
 		node_near_list = []
 		"*** YOUR CODE STARTS HERE ***"
 		# Calculate r 
-		
+		r = min(gamma * (np.log(len(self.nodes)) / len(self.nodes)) ** (1 / d), eta)
 
 		# Loop within tree to find all satisfiable node
-		
+		for i, node in enumerate(self.nodes):
+			state = node[0]
+			dist = np.linalg.norm(state-x_target)
+			if dist < r:
+				node_near_list.append([node, i])
 
 		"*** YOUR CODE ENDS HERE ***"
 
@@ -273,9 +285,9 @@ class RobotRRT(RobotBase):
 				if self.p_mode == 'rrt':
 					"*** YOUR CODE STARTS HERE ***"
 					# Here Question 1(c) starts
-
-					# Line 7, save the new node to our list
 					
+					# Line 7, save the new node to our list
+					self.nodes.append([x_new, index_nearest])
 
 					"*** YOUR CODE ENDS HERE ***"
 
@@ -285,23 +297,36 @@ class RobotRRT(RobotBase):
 
 					# Line 7, find nodes near new node with state x_new,
 					# get a list saving these nodes and their indexes
-					
+					node_near_list = self.rrt_near(x_new)
 
 
 					# Line 9-12, loop from the list, find node with
 					# the minimum path cost, get its index as well
+					xmin = index_nearest
+					cmin = self.rrt_cost(x_nearest, x_new) + self.nodes[index_nearest][2]  # Total cost for x_new
 					
+					for node, idx in node_near_list:
+						if self.rrt_collision_free(node[0], x_new):
+							cost = self.rrt_cost(node[0], x_new) + node[2]
+							if cost < cmin:
+								xmin = idx
+								cmin = cost
 
 
 
 					# Line 8 and 13, save the new node to our rrt_star tree
 					# with form [state, parent_node_index, path_cost]
-					
+					self.nodes.append([x_new, xmin, cmin])
 
 					# Line 14-16, loop from the list, check whether these nodes
 					# can get a shorter path cost when they connect to our new node
 					# If so, update their connection and the cost.
-					
+					for node, idx in node_near_list:
+						if self.rrt_collision_free(x_new, node[0]):
+							new_cost = cmin + self.rrt_cost(x_new, node[0])
+							if new_cost < node[2]:
+								node[1] = len(self.nodes) - 1  # Update parent to x_new
+								node[2] = new_cost             # Update the cost
 
 					"*** YOUR CODE ENDS HERE ***"
 
