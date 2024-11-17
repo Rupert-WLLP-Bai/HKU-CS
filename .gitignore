@@ -1,1 +1,10 @@
 **/node_modules
+**/.idea
+**/.vscode
+**/.DS_Store
+**/__pycache__
+**/.ipynb_checkpoints
+**/*.pptx
+**/*.png
+**/*.pth
+**/*.csv

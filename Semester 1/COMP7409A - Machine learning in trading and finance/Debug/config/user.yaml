@@ -1,0 +1,11 @@
+user:
+  initial_cash: 1000000
+  style: 'aggressive'
+
+position_ratio:
+  max_aggressive: 0.9
+  min_aggressive: 0.3
+  max_conservative: 0.7
+  min_conservative: 0.1
+
+commission: 0.0005
