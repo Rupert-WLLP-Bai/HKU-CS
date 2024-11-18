@@ -4,7 +4,7 @@ from utils.plot import plot_all
 
 if __name__ == '__main__':
     backtest_all()
-    train_all(epoch=100)
+    train_all(epoch=2500)
     plot_all()
     
     
