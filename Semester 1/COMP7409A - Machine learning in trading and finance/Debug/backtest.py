@@ -19,11 +19,11 @@ stock_list = stock_config['stock_list']
 
 # 策略列表
 strategies = [
-    ("DualMovingAverageConserative", DualMovingAverageConservative),
+    ("DualMovingAverageConservative", DualMovingAverageConservative),
     ("DualMovingAverageAggressive", DualMovingAverageAggressive),
-    ("RSIConserative", RSIConservative),
+    ("RSIConservative", RSIConservative),
     ("RSIAggressive", RSIAggressive),
-    ("VolatilityConserative", VolatilityConservative),
+    ("VolatilityConservative", VolatilityConservative),
     ("VolatilityAggressive", VolatilityAggressive),
 ]
 

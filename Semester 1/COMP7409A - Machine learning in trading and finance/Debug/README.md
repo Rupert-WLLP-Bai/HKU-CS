@@ -5,3 +5,13 @@
 3. model: 模型环境/存储
 4. results: 股票的交易结果
 5. strategies: 交易策略
+
+## 依赖
+1. akshare
+2. gym
+3. torch
+
+## 运行
+```shell
+python main.py
+```

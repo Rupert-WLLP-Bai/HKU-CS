@@ -24,9 +24,9 @@ def plot_results(data, id, name, base_return):
     fig, ax = plt.subplots(figsize=(12,8))
 
     # 绘制柱状图
-    bar1 = ax.bar(x - width, returns, width, label='收益率 (%)', color='tab:blue')
-    bar2 = ax.bar(x, max_drawdowns, width, label='最大回撤 (%)', color='tab:orange')
-    bar3 = ax.bar(x + width, sharpe_ratios, width, label='夏普比率', color='tab:green')
+    bar1 = ax.bar(x - width, returns, width, label='Profit Rate (%)', color='tab:blue')
+    bar2 = ax.bar(x, max_drawdowns, width, label='Max Drawdown (%)', color='tab:orange')
+    bar3 = ax.bar(x + width, sharpe_ratios, width, label='Sharpe', color='tab:green')
 
     # 添加数值标签
     def add_labels(bars):
@@ -42,15 +42,15 @@ def plot_results(data, id, name, base_return):
     # 添加一条基准线 表示区间涨幅
     # 再添加具体的数值标签
     if base_return > 0:
-        ax.axhline(y=base_return * 100, color='r', linestyle='--', label='区间涨幅')
+        ax.axhline(y=base_return * 100, color='r', linestyle='--', label='Interval Increase')
         ax.text(x[-1] + 0.5, base_return * 100 + 1, f'{base_return * 100:.2f}%', ha='left', va='center', color='r')
     else:
-        ax.axhline(y=base_return * 100, color='g', linestyle='--', label='区间涨幅')
+        ax.axhline(y=base_return * 100, color='g', linestyle='--', label='Interval Increase')
         ax.text(x[-1] + 0.5, base_return * 100 - 1, f'{base_return * 100:.2f}%', ha='left', va='center', color='g')
     # 添加标题和标签
     ax.set_title(f'{id} {name}', fontsize=16)
-    ax.set_xlabel('策略', fontsize=12)
-    ax.set_ylabel('指标值', fontsize=12)
+    ax.set_xlabel('Strategy', fontsize=12)
+    ax.set_ylabel('Rate (%)', fontsize=12)
     ax.set_xticks(x)
     ax.set_xticklabels(strategy_names, rotation=45, ha='right')
     ax.legend()
@@ -70,4 +70,7 @@ def plot_all():
         id = stock['id']
         name = stock['name']
         data = read_data(id, name)
+        # 把data中策略一列中 含有'Aggressive'的行放到前面
+        aggressive = data['策略'].str.contains('Aggressive')
+        data = pd.concat([data[aggressive], data[~aggressive]])
         plot_results(data, id, name, data['区间涨幅'][0])

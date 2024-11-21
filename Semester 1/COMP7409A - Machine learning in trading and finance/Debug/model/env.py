@@ -24,9 +24,10 @@ initial_cash = config['user']['initial_cash']
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 class StockTradingEnv(gym.Env):
-    def __init__(self, data):
+    def __init__(self, data,buy_ratio=0.5,sell_ratio=0.5):
         super(StockTradingEnv, self).__init__()
-
+        self.buy_ratio = buy_ratio
+        self.sell_ratio = sell_ratio
         self.data = data
         self.current_step = 0
         self.done = False
@@ -62,8 +63,6 @@ class StockTradingEnv(gym.Env):
         self.prices = []  # 清空价格历史
 
         # 随机生成买入和卖出比例
-        self.buy_ratio = 0.5
-        self.sell_ratio = 0.5
 
         return torch.tensor([self.current_stock_owned, self.current_balance, self.current_stock_price, self.buy_ratio, self.sell_ratio, 0, 0], dtype=torch.float32, device=device)
     
