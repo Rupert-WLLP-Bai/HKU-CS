@@ -33,7 +33,10 @@ class task_1_1:
         s_t = None
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        #
+        t = np.linspace(-1, 1, 2 * self.fs, endpoint=False)
+        # (-0.25, -0.5) (0,0.5) (1/12, 1)
+        # y = sin(ax + b) -> a = 4*pi, b = pi/6
+        s_t = np.sin(4*np.pi*t + np.pi/6)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         s_t = np.array(s_t).astype(float)
         t = np.array(t).astype(float)
@@ -62,7 +65,31 @@ class task_1_1:
         s_t = None
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        #
+        # Generate the time axis: from -1 to 1, with 2*self.fs sample points, interval is 1/self.fs
+        t = np.linspace(-1, 1, 2*self.fs, endpoint=False)
+        
+        # Initialize the signal to all zeros
+        s_t = np.zeros_like(t)
+        
+        # -------------------------------
+        # Rectangle wave part
+        # -------------------------------
+        # Corresponding points: (-0.7,0) -> (-0.7,1) -> (-0.3,1) -> (-0.3,0)
+        # In the interval [-0.7, -0.3), the rectangle wave is 1
+        mask_rect = (t >= -0.7) & (t < -0.3)
+        s_t[mask_rect] = 1.0
+        
+        # -------------------------------
+        # Triangle wave part
+        # -------------------------------
+        # Corresponding points: (-0.3,0) -> (0.5,1) -> (0.7,0)
+        # Rising segment: t in [-0.3, 0.5), rising from 0 to 1
+        mask_tri_rise = (t >= -0.3) & (t < 0.5)
+        s_t[mask_tri_rise] = (t[mask_tri_rise] + 0.3) / 0.8  # 0.8 = 0.5 - (-0.3)
+        
+        # Falling segment: t in [0.5, 0.7), falling from 1 to 0
+        mask_tri_fall = (t >= 0.5) & (t < 0.7)
+        s_t[mask_tri_fall] = (0.7 - t[mask_tri_fall]) / 0.2  # 0.2 = 0.7 - 0.5
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         s_t = np.array(s_t).astype(float)
         t = np.array(t).astype(float)
@@ -91,7 +118,10 @@ class task_1_1:
         s_t = None
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        #
+        t = np.linspace(-1, 1, 2*self.fs, endpoint=False)
+        # real part = cos(4*pi*t)
+        # imaginary part = sin(4*pi*t)
+        s_t = np.cos(4*np.pi*t) + 1j*np.sin(4*np.pi*t)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         s_t = np.array(s_t).astype(np.complex64)
         t = np.array(t).astype(float)
