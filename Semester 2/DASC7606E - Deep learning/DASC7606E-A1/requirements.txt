@@ -1,0 +1,8 @@
+torch
+transformers
+datasets
+torchmetrics==1.4.0
+accelerate
+timm
+albumentations==1.4.6
+pycocotools
