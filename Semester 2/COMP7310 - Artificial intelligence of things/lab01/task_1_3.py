@@ -46,7 +46,17 @@ class task_1_3:
         s_t = None
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        # TODO: YOUR CODE HERE
+        # Generate the time vector from 0 (inclusive) to 2 seconds (exclusive)
+        t = np.arange(0, 2, 1/self.fs)
+        
+        # Generate the message signal m_t as a cosine wave at frequency fm.
+        m_t = np.cos(2 * np.pi * fm * t)
+        
+        # Generate the carrier signal c_t with amplitude Ac, frequency fc and initial phase.
+        c_t = Ac * np.cos(2 * np.pi * fc * t + phase)
+        
+        # Generate the amplitude modulated signal: s(t) = (1 + mu * m(t)) * c(t)
+        s_t = (1 + mu * m_t) * c_t
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Ensure all arrays are of type float
