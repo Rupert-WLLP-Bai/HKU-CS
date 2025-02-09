@@ -43,7 +43,18 @@ class task_1_2:
         s_t = None
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        # todo: YOUR CODE HERE
+        # use cosine function to generate the signal
+        # Generate the time vector (note: endpoint is not included so that t[10]==0.01 when fs=1000)
+        t = np.arange(0, duration, 1/self.fs)
+        # Compute the local time within each period
+        t_local = np.mod(t, period)
+        # Compute the instantaneous frequency (linearly varying over each period)
+        f_t = start_freq + (end_freq - start_freq) * (t_local / period)
+        # Integrate the instantaneous frequency to obtain the phase:
+        # phi = init_phase + 2*pi*(start_freq*t_local + (end_freq-start_freq)*t_local^2/(2*period))
+        phi = init_phase + 2 * np.pi * (start_freq * t_local + (end_freq - start_freq) * t_local**2 / (2 * period))
+        # Generate the signal using the cosine function
+        s_t = amplitude * np.cos(phi)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         
@@ -84,7 +95,17 @@ class task_1_2:
         s_t = None
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
-        # todo: YOUR CODE HERE
+        # Generate the time vector
+        t = np.arange(0, duration, 1/self.fs)
+        # Compute the local time within each period
+        t_local = np.mod(t, period)
+        # Compute the instantaneous frequency (quadratically varying over each period)
+        f_t = start_freq + (end_freq - start_freq) * (t_local / period)**2
+        # Integrate the instantaneous frequency to obtain the phase:
+        # phi = init_phase + 2*pi*(start_freq*t_local + (end_freq-start_freq)*t_local^3/(3*period^2))
+        phi = init_phase + 2 * np.pi * (start_freq * t_local + (end_freq - start_freq) * t_local**3 / (3 * period**2))
+        # Generate the signal using the cosine function
+        s_t = amplitude * np.cos(phi)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         t = np.array(t).astype(float)
