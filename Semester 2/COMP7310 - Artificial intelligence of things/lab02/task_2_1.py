@@ -42,6 +42,9 @@ class task_2_1:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        s_t = 2.025 * np.cos(2 * np.pi * 20.25 * self.t + np.pi/3)
+        s_f = np.abs(fft(s_t))[:self.N//2]
+        s_f_freq = fftfreq(self.N, 1/self.fs)[:self.N//2]
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
 
         
