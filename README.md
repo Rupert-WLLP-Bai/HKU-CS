@@ -58,13 +58,18 @@
 | ---------- | --------- | --------- | --------- | --------- | ----- |
 | 0          | 2025-1-14 | 2025-2-11 | 2025-2-15 | Y         |       |
 | 1          | 2025-2-7  | 2025-2-11 | 2025-2-21 | Y         |       |
+| 2          | 2025-1-23 |           | 2025-2-28 |           |       |
 
 ### COMP7404D - Computational intelligence and machine learning
 | Assignment | Opened | Finished | Deadline | Submitted | Grade |
 | ---------- | ------ | -------- | -------- | --------- | ----- |
+
 ### COMP7607B - Natural language processing
-| Assignment | Opened | Finished | Deadline | Submitted | Grade |
-| ---------- | ------ | -------- | -------- | --------- | ----- |
+| Assignment | Opened | Finished | Deadline  | Submitted | Grade |
+| ---------- | ------ | -------- | --------- | --------- | ----- |
+| 1          |        |          | 2025-3-20 |           |       |
+
 ### DASC7606E - Deep learning
-| Assignment | Opened | Finished | Deadline | Submitted | Grade |
-| ---------- | ------ | -------- | -------- | --------- | ----- |
+| Assignment | Opened | Finished | Deadline  | Submitted | Grade |
+| ---------- | ------ | -------- | --------- | --------- | ----- |
+| 1          |        |          | 2025-3-17 |           |       |
