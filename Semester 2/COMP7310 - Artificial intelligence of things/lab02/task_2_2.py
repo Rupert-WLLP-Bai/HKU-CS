@@ -50,6 +50,16 @@ class task_2_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        N = len(s_t)
+        freqs = fftfreq(N, d=1/fs)
+        fft_vals = fft(s_t)
+        
+        fft_mag = np.abs(fft_vals)
+        
+        peaks, _ = find_peaks(fft_mag[:N//2], height=0)
+        peak_freqs = freqs[peaks]
+        
+        freq[:3] = np.sort(np.abs(peak_freqs))[-3:][::-1]
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         freq = np.sort(freq)[::-1]
@@ -75,6 +85,24 @@ class task_2_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Compute the FFT of the signal
+        N = len(s_t)
+        freqs = fftfreq(N, d=1/fs)  # Frequency bins
+        fft_vals = fft(s_t)  # Compute FFT
+        
+        # Get the magnitude of the FFT values
+        fft_mag = np.abs(fft_vals)
+        
+        # Consider only the positive frequency part
+        positive_freqs = freqs[:N//2]
+        positive_fft_mag = fft_mag[:N//2]
+        
+        # Compute the maximum and minimum frequencies in the spectrum
+        max_freq = np.max(positive_freqs)  # Maximum frequency
+        min_freq = np.min(positive_freqs[positive_fft_mag > 0])  # Minimum non-zero frequency
+        
+        # Bandwidth is defined as the difference between the maximum and minimum frequencies
+        bw = max_freq - min_freq
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         return bw 
@@ -98,6 +126,9 @@ class task_2_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        r_peaks, _ = find_peaks(s_t, distance=fs*0.6)
+        rr_intervals = np.diff(r_peaks) / fs
+        hr = 60 / np.mean(rr_intervals)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Make sure hr is a float64
