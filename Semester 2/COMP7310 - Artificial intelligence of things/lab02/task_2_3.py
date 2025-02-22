@@ -48,6 +48,8 @@ class task_2_3:
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Set the appropriate fs and N
+        fs = 300
+        N = 50000
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         t = np.arange(-N / (2 * fs), N / (2 * fs),  1/fs)
@@ -57,6 +59,13 @@ class task_2_3:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Compute the FFT and get the frequency list
+        y = fft(s_t)
+        y = np.abs(y)
+        y = y[:len(y)//2]
+        x = fftfreq(N, 1/fs)
+        x = x[:len(x)//2]
+        peaks, _ = find_peaks(y, height=0)
+        f = x[peaks]    
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         fs = float(fs)
@@ -92,6 +101,8 @@ class task_2_3:
 
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Set the appropriate fs and N
+        fs = 5000
+        N = 20000
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         t = np.arange(-N / (2 * fs), N / (2 * fs),  1/fs)
@@ -101,6 +112,13 @@ class task_2_3:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Compute the FFT and get the frequency list
+        y = fft(s_t)
+        y = np.abs(y)
+        y = y[:len(y)//2]
+        x = fftfreq(N, 1/fs)
+        x = x[:len(x)//2]
+        peaks, _ = find_peaks(y, height=0)
+        f = x[peaks]
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         fs = float(fs)
