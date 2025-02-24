@@ -52,6 +52,8 @@ class task_2_4:
         tx = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        t = np.arange(self.num_samples) / Fs
+        tx = np.exp(1j * 2 * np.pi * (fc * t + (B / (2 * T)) * t**2))
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         return tx
     
@@ -76,6 +78,7 @@ class task_2_4:
         if_signal = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        if_signal = tx * np.conj(self.rx_data)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         return if_signal
     
@@ -99,6 +102,15 @@ class task_2_4:
         range_bins = None # Range bins
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        range_fft = fft(if_signal) # Compute FFT
+        freq_axis = fftfreq(self.num_samples, 1/Fs) # Frequency axis
+        N = len(range_fft) 
+        freq_axis = freq_axis[:N // 2]
+        range_fft = range_fft[:self.num_samples // 2]
+        freq_axis = freq_axis[:self.num_samples // 2]
+        range_bins = c * freq_axis * T / (2 * B)
+        peak_indices = np.argsort(np.abs(range_bins))[-2:][::-1] # Get the two largest peaks
+        distances = range_bins[peak_indices]
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         distances = np.sort(distances)
         return distances, range_fft, range_bins
@@ -121,5 +133,15 @@ class task_2_4:
         aoas = {}
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Number of FFT points for finer resolution
+        fft_points = 4096
+
+        for i, distance in enumerate(range_bins):
+            range_bin_signal = range_fft[i]
+            fft_result = np.fft.fft(range_bin_signal, fft_points)
+            peak_index = np.argmax(np.abs(fft_result))
+            delta_phi = np.angle(fft_result[peak_index])
+            theta = np.arcsin(delta_phi / (2 * np.pi * fc * T))
+            aoas[distance] = round(np.degrees(theta), 1)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         return aoas
