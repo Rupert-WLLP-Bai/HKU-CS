@@ -1,37 +1,44 @@
 import os, sys
 def read_graph_search_problem(file_path):
-    #Your p1 code here
-    """ a sample problem file
-    start_state: A
-    goal_states: G
-    A 0
-    B 0
-    C 0
-    G 0
-    A B 1.0
-    B A 2.0
-    B C 4.0
-    C A 8.0
-    C G 16.0
-    C B 32.0
-    """
-    # read the file
+    """Reads a graph search problem from a file, including state values."""
+    # Read the file
     with open(file_path, 'r') as file:
         lines = file.readlines()
-    # parse the file
-    start_state = lines[0].split()[1]
-    goal_states = lines[1].split()[1]
+    
+    # Parse the file
+    start_state = lines[0].split()[1]  # Start state
+    goal_states = lines[1].split()[1]  # Goal state(s)
+
+    # Initialize graph dictionary and state values
     graph = {}
+    state_values = {}  # Dictionary to store state values (e.g., S: 4)
+    
+    # Read the states and edges
     for line in lines[2:]:
-        if len(line.split()) == 2:
-            state = line.split()[0]
-            graph[state] = {}
-        else:
-            state1, state2, cost = line.split()
-            graph[state1][state2] = float(cost)
-    # return the problem
-    problem = {'start_state': start_state, 'goal_states': goal_states, 'graph': graph}
+        parts = line.split()
+        
+        if len(parts) == 2:  # State definition (e.g., S 4)
+            state = parts[0]
+            value = float(parts[1])  # Store the associated value
+            state_values[state] = value  # Save state and its value
+            graph[state] = {}  # Initialize an empty dictionary for neighbors of this state
+            
+        elif len(parts) == 3:  # Edge definition (e.g., S B 1.5)
+            state1, state2, cost = parts
+            cost = float(cost)
+            if state1 not in graph:
+                graph[state1] = {}
+            graph[state1][state2] = cost
+
+    # Return the problem as a dictionary
+    problem = {
+        'start_state': start_state,
+        'goal_states': goal_states,
+        'graph': graph,
+        'state_values': state_values  # Return the state values as part of the problem
+    }
     return problem
+
 
 def read_8queens_search_problem(file_path):
     #Your p6 code here
