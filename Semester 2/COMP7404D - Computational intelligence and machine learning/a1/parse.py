@@ -41,9 +41,19 @@ def read_graph_search_problem(file_path):
 
 
 def read_8queens_search_problem(file_path):
-    #Your p6 code here
-    problem = ''
-    return problem
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    
+    queens_positions = []
+
+    # Parse the grid and extract the queen positions (where 'q' is located)
+    for row_index, line in enumerate(lines):
+        for col_index, cell in enumerate(line.strip()):
+            if cell == 'q':
+                queens_positions.append((row_index, col_index))
+    
+    return queens_positions  # Return queen positions and grid size (n)
+
 
 if __name__ == "__main__":
     if len(sys.argv) == 3:
