@@ -38,6 +38,10 @@ class task_3_1:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        t = np.arange(0, 10, 1/self.fs)
+        s_t = 2.5 * np.cos(2 * np.pi * 12.3 * t + np.pi/3)
+        acf = correlate(s_t, s_t, mode='full')
+        acf = acf[acf.size // 2:] / np.max(acf)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
 
         
@@ -73,6 +77,11 @@ class task_3_1:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        t = np.arange(0, 2, 1/self.fs)
+        s_t[(t >= 0.3) & (t < 0.9)] = 3
+        s_t[(t >= 1.2) & (t < 1.8)] = 2
+        acf = correlate(s_t, s_t, mode='full')
+        acf = acf[acf.size // 2:] / np.max(acf)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
 
         

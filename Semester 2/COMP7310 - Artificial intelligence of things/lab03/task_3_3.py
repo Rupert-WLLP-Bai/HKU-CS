@@ -51,6 +51,11 @@ class task_3_3:
         pcc = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Implement PCC using np.correlate:
+        s1_centered = s1 - np.mean(s1)
+        s2_centered = s2 - np.mean(s2)
+        numerator = np.correlate(s1_centered, s2_centered)[0]
+        denominator = np.sqrt(np.sum(s1_centered ** 2) * np.sum(s2_centered ** 2))
+        pcc = numerator / denominator
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         pcc = np.float64(pcc)
         return pcc
@@ -75,6 +80,9 @@ class task_3_3:
         pcc, res = None, None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Use get_pcc to compute PCC, set res True if PCC < 0
+        pcc = self.get_pcc(m1, m2)
+        res = pcc < 0
+        
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         pcc = np.float64(pcc)
         res = bool(res)
@@ -100,6 +108,8 @@ class task_3_3:
         pcc, res = None, None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: Use get_pcc to compute PCC, set res True if PCC > 0
+        pcc = self.get_pcc(t1, t2)
+        res = pcc > 0
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         pcc = np.float64(pcc)
         res = bool(res)
@@ -129,6 +139,10 @@ class task_3_3:
         delay, res = None, None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
+        correlation = correlate(s1, s2, mode='full')
+        delay_samples = np.argmax(correlation) - (len(s2) - 1)
+        delay = delay_samples / 10.0  # Convert samples to seconds (sampling rate is 10 Hz)
+        res = delay <= 0.1
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         delay = np.abs(delay).astype(np.float64)
         res = bool(res)
@@ -154,6 +168,8 @@ class task_3_3:
         start_idx = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
+        correlation = correlate(s, p, mode='valid')
+        start_idx = np.argmax(correlation)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         start_idx = int(start_idx)
         return start_idx

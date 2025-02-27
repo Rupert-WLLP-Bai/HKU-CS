@@ -46,6 +46,18 @@ class task_3_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Calculate the autocorrelation of the signal
+        autocorr = correlate(s_t, s_t, mode='full')
+        autocorr = autocorr[autocorr.size // 2:]  # Keep only the second half
+
+        # Find peaks in the autocorrelation
+        peaks, _ = find_peaks(autocorr, distance=fs/2.5)  # Assuming minimum breathing rate of 12 BPM
+
+        # Calculate the breathing rate in BPM
+        if len(peaks) > 1:
+            peak_intervals = np.diff(peaks) / fs  # Time intervals between peaks
+            avg_peak_interval = np.mean(peak_intervals)
+            br = 60 / avg_peak_interval  # Convert to BPM
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Make sure br is a float64
@@ -86,6 +98,35 @@ class task_3_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Set the window length and step
+        window_length = 5  # seconds
+        window_step = 1  # second
+
+        # Calculate breathing rate over time
+        num_samples = len(s_t)
+        num_windows = int((num_samples - window_length * fs) / (window_step * fs)) + 1
+
+        for i in range(num_windows):
+            start_idx = int(i * window_step * fs)
+            end_idx = int(start_idx + window_length * fs)
+            window_data = s_t[start_idx:end_idx]
+            
+            # Calculate the autocorrelation of the windowed signal
+            autocorr = correlate(window_data, window_data, mode='full')
+            autocorr = autocorr[autocorr.size // 2:]  # Keep only the second half
+
+            # Find peaks in the autocorrelation
+            peaks, _ = find_peaks(autocorr, distance=fs/2.5)  # Assuming minimum breathing rate of 12 BPM
+
+            # Calculate the breathing rate in BPM
+            if len(peaks) > 1:
+                peak_intervals = np.diff(peaks) / fs  # Time intervals between peaks
+                avg_peak_interval = np.mean(peak_intervals)
+                br = 60 / avg_peak_interval  # Convert to BPM
+            else:
+                br = 0  # If no peaks are found, set breathing rate to 0
+
+            b_t = np.append(b_t, br)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Make sure br is a float64
@@ -117,6 +158,21 @@ class task_3_2:
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        num_samples = len(s_t)
+        num_windows = int((num_samples - window_length * fs) / (window_step * fs)) + 1
+        
+        for i in range(num_windows):
+            start_idx = int(i * window_step * fs)
+            end_idx = int(start_idx + window_length * fs)
+            window_data = s_t[start_idx:end_idx]
+            
+            # Find peaks in the windowed ECG data
+            peaks, _ = find_peaks(window_data, distance=fs/2.5)  # Assuming minimum heart rate of 30 BPM
+            
+            # Calculate heart rate in BPM
+            num_peaks = len(peaks)
+            heart_rate = (num_peaks / window_length) * 60  # Convert to BPM
+            h_t = np.append(h_t, heart_rate)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Make sure hr is a float64
@@ -146,11 +202,27 @@ class task_3_2:
         
         h_t = np.array([], dtype=np.float64)
         
-        window_length = 0.0 # TODO: Set the window length in seconds
-        window_step = 0.0 # TODO: Set the window step in seconds
+        window_length = 2.0 # TODO: Set the window length in seconds
+        window_step = 0.1 # TODO: Set the window step in seconds
         
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Calculate heart rate over time
+        num_samples = len(s_t)
+        num_windows = int((num_samples - window_length * fs) / (window_step * fs)) + 1
+        
+        for i in range(num_windows):
+            start_idx = int(i * window_step * fs)
+            end_idx = int(start_idx + window_length * fs)
+            window_data = s_t[start_idx:end_idx]
+            
+            # Find peaks in the windowed ECG data
+            peaks, _ = find_peaks(window_data, distance=fs/2.5)  # Assuming minimum heart rate of 30 BPM
+            
+            # Calculate heart rate in BPM
+            num_peaks = len(peaks)
+            heart_rate = (num_peaks / window_length) * 60  # Convert to BPM
+            h_t = np.append(h_t, heart_rate)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         
         # Make sure hr is a float64
