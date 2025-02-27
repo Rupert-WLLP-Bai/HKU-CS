@@ -42,17 +42,16 @@ def read_graph_search_problem(file_path):
 
 def read_8queens_search_problem(file_path):
     with open(file_path, 'r') as file:
-        lines = file.readlines()
-    
-    queens_positions = []
+        board = [line.strip().split() for line in file.readlines()]
+        
+    q_positions = []
+    for col in range(len(board[0])):
+        for row in range(len(board)):
+            if board[row][col] == "q":
+                q_positions.append(row)
+                
+    return q_positions
 
-    # Parse the grid and extract the queen positions (where 'q' is located)
-    for row_index, line in enumerate(lines):
-        for col_index, cell in enumerate(line.strip()):
-            if cell == 'q':
-                queens_positions.append((row_index, col_index))
-    
-    return queens_positions  # Return queen positions and grid size (n)
 
 
 if __name__ == "__main__":
