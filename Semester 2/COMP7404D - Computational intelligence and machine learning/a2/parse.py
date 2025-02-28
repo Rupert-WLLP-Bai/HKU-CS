@@ -1,4 +1,11 @@
 import os, sys
+
+EAT_FOOD_SCORE = 10
+PACMAN_EATEN_SCORE = -500
+PACMAN_WIN_SCORE = 500
+PACMAN_MOVING_SCORE = -1
+DIRECTIONS = ['E','N','S','W'] # Alphabetical order
+
 def read_layout_problem(file_path):
     with open(file_path, 'r') as f:
         lines = f.readlines()
