@@ -27,12 +27,7 @@ def random_play_single_ghost(problem):
         step += 1
         # pacman moves
         # choose a random direction which is not blocked by a wall
-        available_directions = []
-        for direction in DIRECTIONS:
-            i, j = move(pacman_position, direction)
-            if layout[i][j] != '%':
-                available_directions.append(direction)
-        direction = random.choice(available_directions)
+        direction = choose_random_direction(layout, pacman_position)
         # print('step:{}, available_directions:{}, direction:{}'.format(step, available_directions, direction))
         p_moving_str = f'{step}: P moving {direction}'
         pacman_position = move(pacman_position, direction)
@@ -60,12 +55,8 @@ def random_play_single_ghost(problem):
             result_str += f'score: {score}\n'
         # ghost moves
         step += 1
-        available_directions = []
-        for direction in DIRECTIONS:
-            i, j = move(ghost_position, direction)
-            if layout[i][j] != '%':
-                available_directions.append(direction)
-        direction = random.choice(available_directions)
+        # choose a random direction which is not blocked by a wall
+        direction = choose_random_direction(layout, ghost_position)
         # print('step:{}, available_directions:{}, direction:{}'.format(step, available_directions, direction))
         w_moving_str = f'{step}: W moving {direction}'
         ghost_position = move(ghost_position, direction)
@@ -82,6 +73,15 @@ def random_play_single_ghost(problem):
         # print('ghost_move:', direction)
         
     return result_str
+
+def choose_random_direction(layout, pacman_position):
+    available_directions = []
+    for direction in DIRECTIONS:
+        i, j = move(pacman_position, direction)
+        if layout[i][j] != '%':
+            available_directions.append(direction)
+    direction = random.choice(available_directions)
+    return direction
 
 def move(position, direction):
     i, j = position
@@ -148,10 +148,7 @@ def reconstruct_board_state(pacman_position, ghost_position, food_positions, wal
         i, j = ghost_position
         layout[i][j] = 'W'
     # return the layout to string format
-    layout_str = ''
-    for row in layout:
-        layout_str += ''.join(row) + '\n'
-    return layout_str
+    return '\n'.join([''.join(row) for row in layout]) + '\n'
 
 
     
