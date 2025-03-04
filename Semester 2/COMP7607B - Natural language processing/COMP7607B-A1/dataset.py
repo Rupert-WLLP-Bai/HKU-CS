@@ -61,7 +61,12 @@ class Vocabulary:
         specified in the configuration.
         """
         # Write Your Code Here
-        pass
+        most_common_words = [
+            word for word, count in self.word_counts.most_common(self.config.max_vocab_size)
+            if count >= self.config.min_freq
+        ]
+        self.word2idx = {word: idx for idx, word in enumerate(most_common_words)}
+        self.idx2word = {idx: word for word, idx in self.word2idx.items()}
 
 
 class TrainingDataCreator:
@@ -144,8 +149,12 @@ class TrainingDataCreator:
             A list of indices of context words.
         """
         # Write Your Code Here
-        pass
-
+        left = max(0, target_pos - self.config.window_size)
+        right = min(len(words), target_pos + self.config.window_size + 1)
+        return [
+            self.vocabulary.word2idx[words[i]]
+            for i in range(left, right) if i != target_pos
+        ]
 
 class Word2VecDataset(Dataset[Tuple[torch.Tensor, torch.Tensor]]):
     def __init__(self, text_file: str, config: Word2VecConfig = Word2VecConfig()):
