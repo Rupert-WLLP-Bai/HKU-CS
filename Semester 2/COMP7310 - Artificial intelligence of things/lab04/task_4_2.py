@@ -65,6 +65,7 @@ class task_4_2:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
         #
+        filtered = savgol_filter(self.data1, window_length=51, polyorder=3)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered = np.array(filtered, dtype=np.float64)
         return filtered
@@ -104,6 +105,8 @@ class task_4_2:
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
         # 
+        sos = butter(10, 0.1, output='sos')
+        filtered = sosfiltfilt(sos, self.data2)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered = np.array(filtered, dtype=np.float64)
         return filtered

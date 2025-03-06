@@ -1,5 +1,5 @@
 from datasets import Dataset, DatasetDict, IterableDataset, IterableDatasetDict
-
+from datasets import load_dataset
 
 def build_dataset() -> DatasetDict | Dataset | IterableDatasetDict | IterableDataset:
     """
@@ -28,7 +28,12 @@ def build_dataset() -> DatasetDict | Dataset | IterableDatasetDict | IterableDat
         raw_datasets["test"] = load_dataset("cppe-5", split="test")
     """
     # Write your code here.
-
+    raw_datasets = load_dataset("cppe-5")
+    if "validation" not in raw_datasets:
+        split = raw_datasets["train"].train_test_split(0.15, seed=1337)
+        raw_datasets["train"] = split["train"]
+        raw_datasets["validation"] = split["test"]
+    return raw_datasets
 
 def add_preprocessing(dataset, processor) -> DatasetDict | Dataset | IterableDatasetDict | IterableDataset:
     """

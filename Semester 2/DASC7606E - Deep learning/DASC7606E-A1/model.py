@@ -1,3 +1,6 @@
+from transformers import AutoModelForObjectDetection, AutoImageProcessor
+from constants import ID2LABEL, LABEL2ID, MODEL_NAME
+
 def initialize_model():
     """
     Initialize a model for object detection.
@@ -22,7 +25,13 @@ def initialize_model():
     ref: https://huggingface.co/transformers/main_classes/trainer.html#transformers.Trainer
     """
     # Write your code here.
-
+    model = AutoModelForObjectDetection.from_pretrained(
+        pretrained_model_name_or_path=MODEL_NAME,
+        id2label=ID2LABEL,
+        label2id=LABEL2ID,
+        ignore_mismatched_sizes=True,
+    )
+    return model
 
 def initialize_processor():
     """
@@ -45,3 +54,7 @@ def initialize_processor():
     ref: https://huggingface.co/transformers/main_classes/trainer.html#transformers.Trainer
     """
     # Write your code here.
+    processor = AutoImageProcessor.from_pretrained(
+        pretrained_model_name_or_path=MODEL_NAME
+    )
+    return processor

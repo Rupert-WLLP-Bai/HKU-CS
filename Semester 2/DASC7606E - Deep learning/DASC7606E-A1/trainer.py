@@ -41,7 +41,7 @@ def create_training_arguments() -> TrainingArguments:
     return training_args
 
 
-def build_trainer(model, image_processor, datasets) -> Trainer:
+def build_trainer(model, processor, datasets) -> Trainer:
     """
     Build and return the trainer object for training and evaluation.
 
@@ -67,7 +67,7 @@ def build_trainer(model, image_processor, datasets) -> Trainer:
 
     # Partial function to compute metrics
     compute_metrics_fn = partial(
-        compute_metrics, image_processor=image_processor, id2label=ID2LABEL, threshold=0.0
+        compute_metrics, image_processor=processor, id2label=ID2LABEL, threshold=0.0
     )
 
     return Trainer(

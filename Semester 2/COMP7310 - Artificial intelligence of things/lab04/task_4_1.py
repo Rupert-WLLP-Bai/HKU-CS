@@ -55,6 +55,8 @@ class task_4_1:
         # TODO: Implement the high-pass filter using the butter and sosfiltfilt functions
         # sos = ...
         # filtered = 
+        sos = butter(order, cutoff / (fs / 2), btype='highpass', output='sos')
+        filtered = sosfiltfilt(sos, data)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered = np.array(filtered, dtype=np.float64)
         return filtered
@@ -82,6 +84,8 @@ class task_4_1:
         # TODO: Implement the low-pass filter using the butter and sosfiltfilt functions
         # sos = ...
         # filtered = ...
+        sos = butter(order, cutoff / (fs / 2), btype='lowpass', output='sos')
+        filtered = sosfiltfilt(sos, data)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered = np.array(filtered, dtype=np.float64)
         return filtered
@@ -109,6 +113,8 @@ class task_4_1:
         # TODO: Set the cutoff frequencies for the low-pass and high-pass filters
         # cutoff1 = ...
         # cutoff2 = ...
+        cutoff1 = cutoff_low
+        cutoff2 = cutoff_high
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         high_passed = self.apply_highpass(cutoff=cutoff1, data=data, fs=fs, order=order)
         filtered = self.apply_lowpass(cutoff=cutoff2, data=high_passed, fs=fs, order=order)

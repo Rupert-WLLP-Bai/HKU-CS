@@ -51,6 +51,27 @@ class task_4_3:
         frequency = []
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Perform FFT
+        N = len(s)
+        yf = fft(s)
+        xf = fftfreq(N, 1 / fs)
+
+        # Get the power spectrum
+        power_spectrum = np.abs(yf[:N // 2])
+
+        # Find peaks in the power spectrum
+        peaks, _ = find_peaks(power_spectrum)
+
+        # Sort peaks by amplitude
+        sorted_peaks = sorted(peaks, key=lambda x: power_spectrum[x], reverse=True)
+
+        # Get the dominant frequencies
+        if len(sorted_peaks) > 0:
+            frequency.append(xf[sorted_peaks[0]])
+        if len(sorted_peaks) > 1:
+            frequency.append(xf[sorted_peaks[1]])
+        else:
+            frequency.append(xf[sorted_peaks[0]])
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         frequency = np.array(frequency, dtype=np.float64)
         return frequency
@@ -84,6 +105,18 @@ class task_4_3:
         demo_signal = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Demodulate the AM signal
+        t = np.arange(len(s)) / fs
+        carrier = np.cos(2 * np.pi * fc * t)
+        demodulated = s * carrier
+
+        # Apply a low-pass filter to extract the message signal
+        sos = butter(10, fc / 2, 'low', fs=fs, output='sos')
+        demo_signal = sosfiltfilt(sos, demodulated)
+
+        # Normalize the demodulated signal
+        demo_signal = demo_signal - np.mean(demo_signal)
+        demo_signal = demo_signal / np.max(np.abs(demo_signal))
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         demo_signal = np.array(demo_signal, dtype=np.float64)
         return demo_signal
@@ -119,6 +152,11 @@ class task_4_3:
         interpolated_signal = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
+        # Interpolate missing data points
+        nans = np.isnan(s)
+        not_nans = ~nans
+        interpolated_signal = np.copy(s)
+        interpolated_signal[nans] = np.interp(np.flatnonzero(nans), np.flatnonzero(not_nans), s[not_nans])
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         interpolated_signal = np.array(interpolated_signal, dtype=np.float64)
         return interpolated_signal
@@ -150,6 +188,9 @@ class task_4_3:
         filtered_signal = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO:
+        # Apply a Butterworth low-pass filter
+        sos = butter(4, 1, 'low', fs=fs, output='sos')
+        filtered_signal = sosfiltfilt(sos, interpolated_signal)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered_signal = np.array(filtered_signal, dtype=np.float64)
         return filtered_signal
