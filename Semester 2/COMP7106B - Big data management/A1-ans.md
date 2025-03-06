@@ -43,19 +43,23 @@ $$
 
 ## 2
 
-![image-20250302153644407](C:\Users\Pejoy\Desktop\Code\HKU-CS\Semester 2\COMP7106B - Big data management\Q2.jpg)
+![image-20250302153644407](./Q2.jpg)
 
-| Node | Q                                 | oNN  | dist(q, oNN) |
-| ---- | --------------------------------- | ---- | ------------ |
-| Root | M1(1), M2(2), M3(4)               | null | inf          |
-| M1   | m2($\sqrt2$), m1(2), M2(2), M3(4) | null | inf          |
-| m2   | m1(2), M2(2), M3(4)               | b    | $\sqrt5$     |
-| m1   | M2(2), M3(4)                      | b    | $\sqrt5$     |
-| M2   | m3(2), m4(4), M3(4)               | b    | $\sqrt5$     |
-| m3   | m4(4), M3(4)                      | f    | 2            |
+| Node | Q                                                                              | oNN  | dist(q, oNN) | rating       |
+| ---- | ------------------------------------------------------------------------------ | ---- | ------------ | ------------ |
+| Root | M1(1), M2(2), M3(4)                                                            | null | inf          |              |
+| M1   | m2($\sqrt2$), m1(2), M2(2), M3(4)                                              | null | inf          |              |
+| m2   | a($\sqrt2$), m1(2)，M2(2), b($\sqrt5$), c(2$\sqrt2$), M3(4)                    | null | inf          |              |
+| a    | m1(2), M2(2), b($\sqrt5$), c(2$\sqrt2$), M3(4)                                 | null | inf          | 6 $\not > 6$ |
+| m1   | M2(2), b($\sqrt5$), e($\sqrt5$), c(2$\sqrt2$), e(4), M3(4)                     | null | inf          |              |
+| M2   | m3(2), b($\sqrt5$), e($\sqrt5$), c(2$\sqrt2$), e(4), m4(4), M3(4)              | null | inf          |              |
+| m3   | f(2), b($\sqrt5$), e($\sqrt5$), c(2$\sqrt2$), g($\sqrt10$), e(4), m4(4), M3(4) | null | inf          |              |
+| f    | b($\sqrt5$), e($\sqrt5$), c(2$\sqrt2$), g($\sqrt10$), e(4), m4(4), M3(4)       | f    | 2            | 7 > 6        |
 
 ### Result
 
 oNN = f 
 
 dist(q, oNN) = 2
+
+Node Accessed = 1 + 3 + 4 + 7 = 15
