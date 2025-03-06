@@ -87,7 +87,7 @@ def word_analogy(
         idx2word[idx.item()]
         for idx in closest_idxs
         if idx2word[idx.item()] not in [word1, word2, word3]
-    ][:10] # change to top 10
+    ][:5]
 
     return closest_words
 
