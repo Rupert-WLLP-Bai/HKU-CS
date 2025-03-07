@@ -99,14 +99,14 @@ class task_4_2:
         >>> dv = test._compute_derivative_variation(filtered)
         >>> dv < 0.1
         True
-        True
         """
         filtered = None
         # >>>>>>>>>>>>>>> YOUR CODE HERE <<<<<<<<<<<<<<<
         # TODO: 
         # 
-        sos = butter(10, 0.1, output='sos')
-        filtered = sosfiltfilt(sos, self.data2)
+        res = hampel(self.data2, window_size=10, n_sigma=3.0)
+        filtered_data = res.filtered_data
+        filtered = savgol_filter(filtered_data, window_length=51, polyorder=3)
         # >>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<
         filtered = np.array(filtered, dtype=np.float64)
         return filtered

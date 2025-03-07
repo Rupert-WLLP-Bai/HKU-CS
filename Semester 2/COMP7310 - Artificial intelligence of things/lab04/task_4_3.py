@@ -111,7 +111,7 @@ class task_4_3:
         demodulated = s * carrier
 
         # Apply a low-pass filter to extract the message signal
-        sos = butter(10, fc / 2, 'low', fs=fs, output='sos')
+        sos = butter(4, 10, 'low', fs=fs, output='sos')
         demo_signal = sosfiltfilt(sos, demodulated)
 
         # Normalize the demodulated signal
