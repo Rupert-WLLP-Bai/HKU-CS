@@ -1,0 +1,22 @@
+{
+    "chosen": [
+        {
+            "content": "Please translate the following sentence from English to Chinese: Hello world!",
+            "role": "user"
+        },
+        {
+            "content": "你好,世界!",
+            "role": "assistant"
+        }
+    ],
+    "rejected": [
+        {
+            "content": "Please translate the following sentence from English to Chinese: Hello world!",
+            "role": "user"
+        },
+        {
+            "content": "你好",
+            "role": "assistant"
+        }
+    ]
+}

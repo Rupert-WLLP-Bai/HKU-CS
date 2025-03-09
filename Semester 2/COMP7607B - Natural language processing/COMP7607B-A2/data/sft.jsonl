@@ -1,0 +1,12 @@
+{
+    "conversations": [
+        {
+            "role": "user",
+            "content": "Please translate the following sentence from English to Chinese: Hello world!"
+        },
+        {
+            "role": "assistant",
+            "content": "你好,世界!"
+        }
+    ]
+}
