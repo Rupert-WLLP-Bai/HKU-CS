@@ -80,7 +80,7 @@ def minimax_decision(pacman_position, ghost_positions, food_positions, wall_posi
 
         if agent_index == 0:  # Pacman (Max node)
             best_value = float('-inf')
-            best_actions = []  # 记录所有最佳方向
+            best_actions = []  # Record all best directions
 
             for action in DIRECTIONS:
                 new_position = move(state['pacman'], action)
@@ -91,11 +91,11 @@ def minimax_decision(pacman_position, ghost_positions, food_positions, wall_posi
 
                 if value > best_value:
                     best_value = value
-                    best_actions = [action]  # 更新最佳方向
+                    best_actions = [action]  # Update best directions
                 elif value == best_value:
-                    best_actions.append(action)  # 记录多个最佳方向
+                    best_actions.append(action)  # Record multiple best directions
 
-            return random.choice(best_actions) if depth == k else best_value  # 随机选择一个最佳方向
+            return random.choice(best_actions) if depth == k else best_value  # Randomly choose one of the best directions
 
         else:  # Ghosts (Min nodes)
             ghost_keys = list(state['ghosts'].keys())
@@ -103,7 +103,7 @@ def minimax_decision(pacman_position, ghost_positions, food_positions, wall_posi
             ghost_position = state['ghosts'][ghost_name]
 
             worst_value = float('inf')
-            best_actions = []  # 记录所有最差方向
+            best_actions = []  # Record all worst directions
 
             valid_actions = [d for d in DIRECTIONS if move(ghost_position, d) not in wall_positions]
 
@@ -116,16 +116,16 @@ def minimax_decision(pacman_position, ghost_positions, food_positions, wall_posi
                 next_depth = depth - 1 if next_agent == 0 else depth
                 value = minimax({'pacman': state['pacman'], 'ghosts': new_ghosts, 'food': state['food']}, next_depth, next_agent)
 
-                if value < worst_value:  # Ghosts 选择最小值
+                if value < worst_value:  # Ghosts choose the minimum value
                     worst_value = value
-                    best_actions = [action]  # 更新最差方向
+                    best_actions = [action]  # Update worst directions
                 elif value == worst_value:
-                    best_actions.append(action)  # 记录多个最差方向
+                    best_actions.append(action)  # Record multiple worst directions
 
-            return random.choice(best_actions) if depth == k else worst_value  # 随机选择一个最差方向
+            return random.choice(best_actions) if depth == k else worst_value  # Randomly choose one of the worst directions
 
     state = {'pacman': pacman_position, 'ghosts': ghost_positions, 'food': food_positions}
-    return minimax(state, depth, 0)  # Pacman 选择方向
+    return minimax(state, depth, 0)  # Pacman chooses direction
 
 
 
