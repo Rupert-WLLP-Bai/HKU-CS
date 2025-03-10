@@ -5,46 +5,30 @@ import sys, copy, random, os, time
 from parse import DIRECTIONS, EAT_FOOD_SCORE, PACMAN_EATEN_SCORE, PACMAN_WIN_SCORE, PACMAN_MOVING_SCORE
 
 def min_max_multiple_ghosts(problem, k):
+    """
+    Pacman agent using Minimax search against Minimax ghosts.
+    """
     seed = problem['seed']
     if seed != -1:
         random.seed(seed, version=1)
-
+    
     layout = problem['layout']
     pacman_position, ghost_positions, food_positions, wall_positions, board_size = extract_board_state(layout)
     score = 0
     step = 0
     result_str = f'seed: {seed}\n0\n'
     result_str += reconstruct_board_state(pacman_position, ghost_positions, food_positions, wall_positions, board_size)
-
-    visited_positions = []  # 记录最近 10 步的位置
-    MAX_HISTORY = 10  
-    MAX_STEPS = 1000  # 设定最大步数，防止无限循环
-
-    while step < MAX_STEPS:
+    
+    while True:
         step += 1
-
-        # 记录当前位置
-        visited_positions.append(pacman_position)
-        if len(visited_positions) > MAX_HISTORY:
-            visited_positions.pop(0)
-
-        # 检查是否可能出现死循环
-        loop_count = visited_positions.count(pacman_position)
-        if loop_count > 3:  
-            print(f"Warning: Potential loop detected at step {step}, position {pacman_position}!")
-
-        # Pacman moves using minimax
-        score_eval, direction = minimax(pacman_position, ghost_positions, food_positions, wall_positions, k, True)
-
-        if direction:
-            pacman_position = move(pacman_position, direction)
-            p_moving_str = f'{step}: P moving {direction}'
-        else:
-            p_moving_str = f'{step}: P Moving'  
-
+        # Pacman chooses the best move using Minimax
+        direction = minimax_decision(pacman_position, ghost_positions, food_positions, wall_positions, depth=k)
+        pacman_position = move(pacman_position, direction)
         score += PACMAN_MOVING_SCORE
-        print(f"Step {step}, Pacman Score Eval: {score_eval}, Move: {direction}, Score: {score}")
-
+        p_moving_str = f'{step}: P moving {direction}'
+        
+        # print('step:{}, P moving {}'.format(step,direction))
+        
         # Pacman eats food
         if pacman_position in food_positions:
             food_positions.remove(pacman_position)
@@ -54,167 +38,133 @@ def min_max_multiple_ghosts(problem, k):
                 result_str += p_moving_str + '\n' + reconstruct_board_state(pacman_position, ghost_positions, food_positions, wall_positions, board_size)
                 result_str += f'score: {score}\nWIN: Pacman'
                 return result_str, 'Pacman'
-
+        
         result_str += p_moving_str + '\n' + reconstruct_board_state(pacman_position, ghost_positions, food_positions, wall_positions, board_size)
-
-        # Pacman is eaten by any ghost
-        if pacman_position in ghost_positions:
+        
+        # Check if Pacman is eaten by any ghost
+        if pacman_position in ghost_positions.values():
             score += PACMAN_EATEN_SCORE
             result_str += f'score: {score}\nWIN: Ghost'
             return result_str, 'Ghost'
-
-        # Ghosts move
-        new_ghost_positions = []
-        for i, ghost_position in enumerate(ghost_positions):
+        else:
+            result_str += f'score: {score}\n'
+        
+        # Each ghost moves using Minimax
+        for ghost_name in sorted(ghost_positions.keys()):
             step += 1
-            score_eval, direction = minimax(pacman_position, ghost_positions, food_positions, wall_positions, k, False, i)
-            # print(f"Step {step}, Ghost {chr(87+i)} Score Eval: {score_eval}, Move: {direction}")  # 调试信息
-
-            if direction:
-                new_ghost_position = move(ghost_position, direction)
-                w_moving_str = f'{step}: {chr(87+i)} moving {direction}'
-            else:
-                new_ghost_position = ghost_position
-                w_moving_str = f'{step}: {chr(87+i)} Moving'
-
-            new_ghost_positions.append(new_ghost_position)
-            result_str += w_moving_str + '\n' + reconstruct_board_state(pacman_position, new_ghost_positions, food_positions, wall_positions, board_size)
-
-            if pacman_position in new_ghost_positions:
+            old_position = ghost_positions[ghost_name]
+            direction = minimax_decision(ghost_positions[ghost_name], ghost_positions, food_positions, wall_positions, k)
+            new_position = move(old_position, direction)
+            
+            # print('step:{}, {} moving {}'.format(step,ghost_name,direction))
+            
+            if new_position not in ghost_positions.values():  # Avoid overlapping ghosts
+                ghost_positions[ghost_name] = new_position
+            
+            w_moving_str = f'{step}: {ghost_name} moving {direction}'
+            result_str += w_moving_str + '\n' + reconstruct_board_state(pacman_position, ghost_positions, food_positions, wall_positions, board_size)
+            
+            # Check if Pacman is caught after each ghost move
+            if pacman_position in ghost_positions.values():
                 score += PACMAN_EATEN_SCORE
                 result_str += f'score: {score}\nWIN: Ghost'
                 return result_str, 'Ghost'
-
-        ghost_positions = new_ghost_positions
-        result_str += f'score: {score}\n'
-
-    # 终止游戏，防止无限循环
-    print("Game terminated due to possible infinite loop!")
-    result_str += f'score: {score}\nWIN: Unknown (Loop Detected)'
-    return result_str, 'Unknown'
-
-
-
-import random
-
-def minimax(pacman_position, ghost_positions, food_positions, wall_positions, depth, is_pacman, ghost_index=0):
-    """
-    Minimax search function with depth-limited evaluation.
-    Pacman (maximizing) moves first, followed by ghosts (minimizing).
-    If multiple moves have the same best score, Pacman selects randomly.
-    """
-    if depth == 0:
-        return evaluate_state(pacman_position, ghost_positions, food_positions, wall_positions, []), None
-
-    if is_pacman:
-        best_score = float('-inf')
-        best_directions = []  # Store all equally best directions
-
-        for direction in DIRECTIONS:
-            new_position = move(pacman_position, direction)
-            if new_position in wall_positions:
-                continue  # Ignore moves into walls
-
-            score, _ = minimax(new_position, ghost_positions, food_positions, wall_positions, depth - 1, False, 0)
-
-            if score > best_score:
-                best_score = score
-                best_directions = [direction]  # Replace with new best move
-            elif score == best_score:
-                best_directions.append(direction)  # Add alternative best move
-
-        # **Randomly choose from best options**
-        if best_directions:
-            return best_score, random.choice(best_directions)
-        else:
-            return best_score, None  # No valid move
-
-    else:
-        best_score = float('inf')
-        best_direction = None
-        ghost_position = ghost_positions[ghost_index]
-
-        for direction in DIRECTIONS:
-            new_position = move(ghost_position, direction)
-            if new_position in wall_positions or new_position in ghost_positions:
-                continue  # Ignore moves into walls or other ghosts
-
-            new_ghost_positions = ghost_positions[:]
-            new_ghost_positions[ghost_index] = new_position
-
-            if ghost_index < len(ghost_positions) - 1:
-                score, _ = minimax(pacman_position, new_ghost_positions, food_positions, wall_positions, depth - 1, False, ghost_index + 1)
             else:
-                score, _ = minimax(pacman_position, new_ghost_positions, food_positions, wall_positions, depth - 1, True)
+                result_str += f'score: {score}\n'
 
-            if score < best_score:
-                best_score = score
-                best_direction = direction
+def minimax_decision(pacman_position, ghost_positions, food_positions, wall_positions, depth):
+    """ Minimax search with random selection among best moves for Pacman and Ghosts. """
+    def minimax(state, depth, agent_index):
+        if depth == 0 or is_terminal(state):
+            return evaluate(state)
 
-        return best_score, best_direction
+        if agent_index == 0:  # Pacman (Max node)
+            best_value = float('-inf')
+            best_actions = []  # 记录所有最佳方向
+
+            for action in DIRECTIONS:
+                new_position = move(state['pacman'], action)
+                if new_position in wall_positions:
+                    continue
+
+                value = minimax({'pacman': new_position, 'ghosts': state['ghosts'], 'food': state['food']}, depth - 1, 1)
+
+                if value > best_value:
+                    best_value = value
+                    best_actions = [action]  # 更新最佳方向
+                elif value == best_value:
+                    best_actions.append(action)  # 记录多个最佳方向
+
+            return random.choice(best_actions) if depth == k else best_value  # 随机选择一个最佳方向
+
+        else:  # Ghosts (Min nodes)
+            ghost_keys = list(state['ghosts'].keys())
+            ghost_name = ghost_keys[agent_index - 1]
+            ghost_position = state['ghosts'][ghost_name]
+
+            worst_value = float('inf')
+            best_actions = []  # 记录所有最差方向
+
+            valid_actions = [d for d in DIRECTIONS if move(ghost_position, d) not in wall_positions]
+
+            for action in valid_actions:
+                new_position = move(ghost_position, action)
+                new_ghosts = state['ghosts'].copy()
+                new_ghosts[ghost_name] = new_position
+
+                next_agent = agent_index + 1 if agent_index < len(ghost_keys) else 0
+                next_depth = depth - 1 if next_agent == 0 else depth
+                value = minimax({'pacman': state['pacman'], 'ghosts': new_ghosts, 'food': state['food']}, next_depth, next_agent)
+
+                if value < worst_value:  # Ghosts 选择最小值
+                    worst_value = value
+                    best_actions = [action]  # 更新最差方向
+                elif value == worst_value:
+                    best_actions.append(action)  # 记录多个最差方向
+
+            return random.choice(best_actions) if depth == k else worst_value  # 随机选择一个最差方向
+
+    state = {'pacman': pacman_position, 'ghosts': ghost_positions, 'food': food_positions}
+    return minimax(state, depth, 0)  # Pacman 选择方向
 
 
 
-def evaluate_state(pacman_position, ghost_positions, food_positions, wall_positions, visited_positions):
-    """
-    Evaluates the game state to guide the minimax search.
+def is_terminal(state):
+    """ Check if the state is terminal. """
+    return not state['food'] or state['pacman'] in state['ghosts'].values()
 
-    Score Components:
-    - Encourages Pacman to eat food quickly.
-    - Discourages revisiting the same position (to avoid loops).
-    - Encourages Pacman to maintain distance from ghosts.
-    - Favors states with more available moves to prevent deadlocks.
-    """
-
-    # If Pacman is caught, return the worst possible score
+def evaluate(state):
+    """ Heuristic evaluation function for Pacman. """
+    pacman_position = state['pacman']
+    food_positions = state['food']
+    ghost_positions = state['ghosts'].values()
+    
     if pacman_position in ghost_positions:
-        return -10000  
-
-    # If Pacman eats all food, return the best possible score
+        return PACMAN_EATEN_SCORE
     if not food_positions:
-        return 10000  
+        return PACMAN_WIN_SCORE
+    
+    food_distance = min(manhattan_distance(pacman_position, food) for food in food_positions) if food_positions else 0
+    ghost_distance = min(manhattan_distance(pacman_position, ghost) for ghost in ghost_positions)
+    
+    return -food_distance + ghost_distance
 
-    # Distance to nearest food (lower is better)
-    food_distances = [manhattan_distance(pacman_position, food) for food in food_positions]
-    nearest_food_distance = min(food_distances) if food_distances else 1
-
-    # Distance to nearest ghost (higher is better)
-    ghost_distances = [manhattan_distance(pacman_position, ghost) for ghost in ghost_positions]
-    nearest_ghost_distance = min(ghost_distances) if ghost_distances else 100  
-
-    # Count available moves (to avoid being trapped)
-    available_moves = sum(1 for d in DIRECTIONS if move(pacman_position, d) not in wall_positions)
-
-    # **Avoid loops**: Track position frequency in the last 10 moves
-    loop_penalty = 0
-    if visited_positions.count(pacman_position) >= 3:  
-        loop_penalty = -20  # If Pacman revisits 3+ times in last 10 steps, punish heavily
-    elif visited_positions.count(pacman_position) == 2:
-        loop_penalty = -10  # 2 times is still bad, but not as bad as 3 times
-
-    # **Encourage Pacman to eat food aggressively**
-    food_score = 30 / (nearest_food_distance + 1)  
-
-    # **Encourage Pacman to stay away from ghosts**
-    ghost_avoidance = nearest_ghost_distance * 3  
-
-    # **Encourage mobility to avoid getting trapped**
-    mobility_bonus = available_moves * 2  
-
-    # Final score calculation
-    score = food_score + ghost_avoidance + mobility_bonus + loop_penalty
-
-    return score
-
-
-
-
-
-def manhattan_distance(pos1, pos2):
-    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+def choose_random_direction(layout, position, ghost_positions, wall_positions):
+    """ 
+    Chooses a random direction for ghosts while avoiding walls and other ghosts.
+    Returns an empty string if no valid move is possible.
+    """
+    available_directions = []
+    for direction in DIRECTIONS:
+        new_position = move(position, direction)
+        if new_position not in wall_positions and new_position not in ghost_positions.values():
+            available_directions.append(direction)
+    
+    return random.choice(available_directions) if available_directions else ""  # Return empty string if no move possible
 
 
 def move(position, direction):
+    """ Moves a character in the given direction. """
     i, j = position
     if direction == 'E':
         j += 1
@@ -227,34 +177,67 @@ def move(position, direction):
     return i, j
 
 
+def manhattan_distance(pos1, pos2):
+    """ Computes the Manhattan distance between two positions. """
+    return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+
 def extract_board_state(layout):
+    """
+    Extracts the initial board state and returns:
+    1. Pacman position
+    2. Ghost positions (dictionary with names as keys)
+    3. Food positions
+    4. Wall positions
+    5. Board size
+    """
     pacman_position = None
-    ghost_positions = []
+    ghost_positions = {}
     food_positions = []
     wall_positions = []
-    for i, row in enumerate(layout):
-        for j, cell in enumerate(row):
-            if cell == 'P':
+    board_size = (len(layout), len(layout[0]))
+    ghost_names = ['W', 'X', 'Y', 'Z']
+    ghost_count = 0
+
+    for i in range(len(layout)):
+        for j in range(len(layout[i])):
+            if layout[i][j] == 'P':
                 pacman_position = (i, j)
-            elif cell in 'WXYZ':
-                ghost_positions.append((i, j))
-            elif cell == '.':
+            elif layout[i][j] in ghost_names:
+                ghost_positions[layout[i][j]] = (i, j)
+                ghost_count += 1
+            elif layout[i][j] == '.':
                 food_positions.append((i, j))
-            elif cell == '%':
+            elif layout[i][j] == '%':
                 wall_positions.append((i, j))
-    return pacman_position, ghost_positions, food_positions, wall_positions, (len(layout), len(layout[0]))
+
+    return pacman_position, ghost_positions, food_positions, wall_positions, board_size
 
 
 def reconstruct_board_state(pacman_position, ghost_positions, food_positions, wall_positions, board_size):
-    board = [[' ' for _ in range(board_size[1])] for _ in range(board_size[0])]
+    """
+    Reconstructs the board as a string after each move.
+    """
+    layout = [[' ' for _ in range(board_size[1])] for _ in range(board_size[0])]
+    
+    # Add walls
     for i, j in wall_positions:
-        board[i][j] = '%'
+        layout[i][j] = '%'
+
+    # Add Pacman
+    i, j = pacman_position
+    layout[i][j] = 'P'
+
+    # Add ghosts
+    for ghost_name, (i, j) in ghost_positions.items():
+        layout[i][j] = ghost_name
+
+    # Add food
     for i, j in food_positions:
-        board[i][j] = '.'
-    for i, pos in enumerate(ghost_positions):
-        board[pos[0]][pos[1]] = chr(87 + i)
-    board[pacman_position[0]][pacman_position[1]] = 'P'
-    return '\n'.join(''.join(row) for row in board) + '\n'
+        if layout[i][j] == ' ':
+            layout[i][j] = '.'
+
+    return '\n'.join([''.join(row) for row in layout]) + '\n'
 
 
 if __name__ == "__main__":
