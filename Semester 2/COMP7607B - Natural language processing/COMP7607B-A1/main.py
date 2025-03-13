@@ -18,6 +18,7 @@ from constants import (
 )
 import argparse
 import os
+from utils import set_random_seeds
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
@@ -29,8 +30,17 @@ def main(args):
     This function sets up the device, loads the data, builds the model,
     optimizes the model, trains the model, and evaluates the model.
     """
+    
+    # Set seed for reproducibility
+    set_random_seeds()
+    
     # Set device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    
+    if device.type == "cuda":
+        print(f"Using {torch.cuda.get_device_name(0)} for training.")
+    else:
+        print("Using CPU for training.")
 
     # Load dat: DataLoader[tuple[Tensor, Tensor]]a
     dataloader: DataLoader[tuple[torch.Tensor, torch.Tensor]] = get_loader(
@@ -80,7 +90,7 @@ def main(args):
     # Word Analogy Task
     analogies = [
         ("king", "man", "woman"),
-        ("good", "better", "bad"),
+        ("better", "good", "bad"),
         ("london", "england", "france"),
     ]
 
@@ -100,6 +110,9 @@ def main(args):
 
 
 if __name__ == "__main__":
+    # set CUBLAS_WORKSPACE_CONFIG=:4096:8
+    os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+    
     parser = argparse.ArgumentParser(description="Train and evaluate a Word2Vec model.")
 
     # fmt: off
