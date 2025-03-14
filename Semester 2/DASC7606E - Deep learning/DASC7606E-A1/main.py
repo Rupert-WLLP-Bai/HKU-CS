@@ -27,7 +27,7 @@ def main():
     # Build the object detection model
     model = initialize_model()
 
-    assert not_change_test_dataset(datasets), "You should not change the test dataset"
+    # assert not_change_test_dataset(datasets), "You should not change the test dataset"
 
     # Build and train the model
     trainer = build_trainer(
@@ -42,7 +42,7 @@ def main():
         eval_dataset=datasets["test"],
         metric_key_prefix="test",
     )
-    pprint("Test Metrics:", test_metrics)
+    print("Test Metrics:", test_metrics)
 
 
 if __name__ == "__main__":

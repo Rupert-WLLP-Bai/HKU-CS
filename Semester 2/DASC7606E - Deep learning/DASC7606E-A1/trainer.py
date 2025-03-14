@@ -5,6 +5,15 @@ from constants import OUTPUT_DIR, ID2LABEL
 from evaluate import compute_metrics
 from functools import partial
 
+def collate_fn(batch):
+    data = {}
+    data["pixel_values"] = torch.stack([x["pixel_values"] for x in batch])
+    data["labels"] = [x["labels"] for x in batch]
+
+    if "pixel_mask" in batch[0]:
+        data["pixel_mask"] = torch.stack([x["pixel_mask"] for x in batch])
+
+    return data
 
 def create_training_arguments() -> TrainingArguments:
     """
@@ -20,13 +29,13 @@ def create_training_arguments() -> TrainingArguments:
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,  # Where to save the model checkpoints
         num_train_epochs=10,  # Adjust number of epochs as needed
-        fp16=False,  # Use mixed precision if you have a supported GPU (set to True for faster training)
-        per_device_train_batch_size=8,  # Batch size for training
+        fp16=True,  # Use mixed precision if you have a supported GPU (set to True for faster training)
+        per_device_train_batch_size=4,  # Batch size for training
         dataloader_num_workers=4,  # Number of worker processes for data loading
-        learning_rate=1e-3,  # Learning rate for fine-tuning
+        learning_rate=5e-5,  # Learning rate for fine-tuning
         lr_scheduler_type="cosine",  # Type of learning rate scheduler
         weight_decay=1e-4,  # Weight decay to avoid overfitting
-        max_grad_norm=0.1,  # Gradient clipping to avoid exploding gradients
+        max_grad_norm=0.01,  # Gradient clipping to avoid exploding gradients
         metric_for_best_model="eval_map",  # Metric to determine the best model
         greater_is_better=True,  # Whether a higher metric is better
         load_best_model_at_end=True,  # Load the best model after training
@@ -40,7 +49,6 @@ def create_training_arguments() -> TrainingArguments:
 
     return training_args
 
-
 def build_trainer(model, processor, datasets) -> Trainer:
     """
     Build and return the trainer object for training and evaluation.
@@ -53,16 +61,6 @@ def build_trainer(model, processor, datasets) -> Trainer:
     Returns:
         Trainer object for training and evaluation.
     """
-    def collate_fn(batch):
-        data = {}
-        data["pixel_values"] = torch.stack([x["pixel_values"] for x in batch])
-        data["labels"] = [x["labels"] for x in batch]
-
-        if "pixel_mask" in batch[0]:
-            data["pixel_mask"] = torch.stack([x["pixel_mask"] for x in batch])
-
-        return data
-
     training_args: TrainingArguments = create_training_arguments()
 
     # Partial function to compute metrics
