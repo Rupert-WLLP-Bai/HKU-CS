@@ -49,6 +49,8 @@ def main(args):
         window_size=args.window_size,
         min_freq=args.min_freq,
         max_vocab_size=args.max_vocab_size,
+        device=device,
+        num_workers=0,
     )
 
     # Model
@@ -130,6 +132,8 @@ if __name__ == "__main__":
     parser.add_argument("--model_save_path", type=str, default=MODEL_SAVE_PATH, help="Path to save the trained model.")
     parser.add_argument("--use_neg_sampling", action="store_true", help="Use negative sampling (only for skipgram).")
 
+    parser.add_argument("--num_workers", type=int, default=2, help="Number of workers for data loading.")
+    
     args = parser.parse_args()
     main(args)
     # fmt: on

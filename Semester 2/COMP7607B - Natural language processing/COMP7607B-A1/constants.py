@@ -8,7 +8,7 @@ MAX_VOCAB_SIZE = 30000  # Maximum size of the vocabulary
 EMBEDDING_DIM = 128  # Dimension of the word embeddings
 WINDOW_SIZE = 5  # Context window size
 BATCH_SIZE = 4096  # Batch size for training
-NUM_EPOCHS = 10  # Number of training epochs
+NUM_EPOCHS = 3  # Number of training epochs
 LEARNING_RATE = 0.001  # Learning rate for the optimizer
 
 # Other Constants

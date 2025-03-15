@@ -156,32 +156,22 @@ class TrainingDataCreator:
             for i in range(left, right) if i != target_pos
         ]
 
-class Word2VecDataset(Dataset[Tuple[torch.Tensor, torch.Tensor]]):
-    def __init__(self, text_file: str, config: Word2VecConfig = Word2VecConfig()):
-        """
-        Initializes the Word2Vec Dataset.
-
-        Args:
-            text_file: Path to the text file containing the corpus.
-            config: Configuration for Word2Vec dataset creation.
-        """
+class Word2VecDataset(Dataset):
+    def __init__(self, text_file: str, config: Word2VecConfig = Word2VecConfig(), device: torch.device = torch.device("cpu")):
         file_path = Path(text_file)
         self.vocabulary = Vocabulary(config)
         self.vocabulary.build_from_file(file_path)
 
         creator = TrainingDataCreator(config, self.vocabulary)
-        self.data = creator.create_from_file(file_path)
-
+        data_list = creator.create_from_file(file_path)
+        self.data = torch.tensor(data_list, dtype=torch.long).to(device)
+        
+    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
+        target, context = self.data[idx]
+        return target, context
+    
     def __len__(self) -> int:
         return len(self.data)
-
-    def __getitem__(self, idx: int) -> Tuple[torch.Tensor, torch.Tensor]:
-        """Returns a training example."""
-        target, context = self.data[idx]
-        return (
-            torch.tensor(target, dtype=torch.long),
-            torch.tensor(context, dtype=torch.long),
-        )
 
 
 def get_loader(
@@ -190,30 +180,10 @@ def get_loader(
     window_size: int = 5,
     min_freq: int = 5,
     max_vocab_size: int = 10000,
-) -> DataLoader[tuple[torch.Tensor, torch.Tensor]]:
-    """
-    Creates and returns a DataLoader for the Word2Vec dataset.
-
-    Args:
-        text_file: Path to the text file containing the corpus.
-        batch_size: Batch size.
-        window_size: Context window size.
-        min_freq: Minimum frequency for a word to be included.
-        max_vocab_size: Maximum vocabulary size.
-
-    Returns:
-        A DataLoader for the dataset.
-    """
-    # Create the dataset
+    device: torch.device = torch.device("cpu"),
+    num_workers: int = 2,
+) -> DataLoader:
     config = Word2VecConfig(window_size, min_freq, max_vocab_size)
-    dataset = Word2VecDataset(text_file, config)
-
-    # Create the DataLoader
-    dataloader = DataLoader[tuple[torch.Tensor, torch.Tensor]](
-        dataset,
-        batch_size=batch_size,
-        shuffle=False,
-    )
-
-    # Return the DataLoader
+    dataset = Word2VecDataset(text_file, config, device)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers)
     return dataloader
