@@ -28,7 +28,7 @@ def create_training_arguments() -> TrainingArguments:
     """
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,  # Where to save the model checkpoints
-        num_train_epochs=10,  # Adjust number of epochs as needed
+        num_train_epochs=50,  # Adjust number of epochs as needed
         fp16=True,  # Use mixed precision if you have a supported GPU (set to True for faster training)
         per_device_train_batch_size=4,  # Batch size for training
         dataloader_num_workers=4,  # Number of worker processes for data loading

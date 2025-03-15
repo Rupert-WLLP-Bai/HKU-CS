@@ -1,10 +1,26 @@
 from datasets import DatasetDict
+import random
+import numpy as np
+import torch
 
 from constants import (
+    SEED,
     TEST_DATASET_FINGERPRINT,
     TEST_DATASET_ROW_NUMBER,
     TEST_DATASET_SIZE_IN_BYTES,
 )
+
+
+def set_random_seeds():
+    random.seed(SEED)
+    np.random.seed(SEED)
+    torch.manual_seed(SEED)
+    torch.use_deterministic_algorithms(True, warn_only=True)
+
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(SEED)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
 
 
 def not_change_test_dataset(raw_datasets: DatasetDict) -> bool:
