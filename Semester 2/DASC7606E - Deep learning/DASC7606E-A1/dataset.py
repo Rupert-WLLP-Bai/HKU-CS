@@ -2,10 +2,6 @@ from datasets import DatasetDict, load_dataset
 import albumentations as A
 import numpy as np
 from functools import partial
-from transformers import AutoImageProcessor
-from model import initialize_processor
-from constants import MODEL_NAME
-
 
 def build_dataset() -> DatasetDict:
     """
@@ -53,17 +49,19 @@ def augment_and_transform_batch(examples, transform, image_processor):
 
 def add_preprocessing(dataset, processor):
     """Apply preprocessing including augmentation and formatting annotations."""
-    # processor = AutoImageProcessor.from_pretrained(MODEL_NAME)
-
+    
     train_transform = A.Compose([
-        A.HorizontalFlip(p=0.2),
-        A.RandomBrightnessContrast(p=0.2),
+        A.Resize(512, 512),
+        A.Perspective(p=0.1),
+        A.HorizontalFlip(p=0.5),
+        A.RandomBrightnessContrast(p=0.5),
         A.HueSaturationValue(p=0.1),
-        A.Rotate(limit=90, p=0.2),
     ], bbox_params=A.BboxParams(format="coco", label_fields=["category"], clip=True, min_visibility=0.1, min_area=25))
 
-    validation_transform = A.Compose([A.NoOp()],
-                                     bbox_params=A.BboxParams(format="coco", label_fields=["category"], clip=True))
+    validation_transform = A.Compose([
+        A.Resize(512, 512),
+        A.NoOp(),
+    ], bbox_params=A.BboxParams(format="coco", label_fields=["category"], clip=True))
 
     train_transform_batch = partial(augment_and_transform_batch, transform=train_transform, image_processor=processor)
     validation_transform_batch = partial(augment_and_transform_batch, transform=validation_transform,
@@ -72,10 +70,6 @@ def add_preprocessing(dataset, processor):
     dataset["train"] = dataset["train"].with_transform(train_transform_batch)
     dataset["validation"] = dataset["validation"].with_transform(validation_transform_batch)
     dataset["test"] = dataset["test"].with_transform(validation_transform_batch)
-
-    # dataset = dataset.filter(lambda line: line["image"].width == line["width"] and
-    #                                       line["image"].height == line["height"] and
-    #                                       is_valid_bbox(line["objects"]["bbox"], line["width"], line["height"]))
 
     return dataset
 
@@ -88,47 +82,4 @@ def is_valid_bbox(bboxes, image_width, image_height):
             print(f"Invalid bounding box: {bbox}")
             return False
     return True
-
-
-# def filter_invalid_bboxes(dataset):
-#     """Filter out invalid bounding boxes."""
-#     for i in range(len(dataset)):
-#         if not is_valid_bbox(dataset[i]["objects"]["bbox"], dataset[i]["width"], dataset[i]["height"]):
-#             return False
-#     return True
-#
-
-
-    # for image, objects in zip(examples["image"], examples["objects"]):
-    #     image_width, image_height = image.size
-    #     valid_bboxes = [bbox for bbox in objects["bbox"] if is_valid_bbox(bbox, image_width, image_height)]
-    #     if valid_bboxes:
-    #         objects["bbox"] = valid_bboxes
-    #         valid_examples.append({"image": image, "objects": objects})
-    # return valid_examples
-
-
-
-if __name__ == "__main__":
-    dataset = build_dataset()
-    processor = initialize_processor()
-    dataset = add_preprocessing(dataset, processor)
-    # c = []
-    # for i in range(200):
-    #     # a = dataset["train"][i]["objects"]["bbox"]
-    #     b = dataset["train"][i]["image"].width
-    #     c.append(b)
-    print(dataset)# Print dataset structure to verify loading and preprocessing
-    print("Processing Complete. Checking Entire Dataset...")
-
-    # 遍历整个数据集
-    for split in ["train", "validation", "test"]:
-        print(f"\nChecking {split.upper()} dataset ({len(dataset[split])} samples)")
-
-        for i, sample in enumerate(dataset[split]):
-            if i % 10 == 0:  # 每 10 个样本打印一次信息
-                print(f"Sample {i}/{len(dataset[split])}:")
-                print(sample)
-
-    print("\n All samples processed successfully!")
 
