@@ -41,7 +41,10 @@ def dpo_loss(
 
     # Calculate loss
     # Write Your Code Here
-
+    logits_diff = chosen_probs - reject_probs
+    ref_logits_diff = chosen_ref_probs - reject_ref_probs
+    loss = -F.logsigmoid(beta * (logits_diff - ref_logits_diff))
+    
     return loss.mean()
 
 class TrainerBase:
