@@ -23,6 +23,8 @@ def create_training_arguments() -> TrainingArguments:
         load_best_model_at_end=True,
         push_to_hub=False,
         eval_strategy="steps",
+        save_steps=5000,
+        logging_steps=1000,
     )
 
     return training_args

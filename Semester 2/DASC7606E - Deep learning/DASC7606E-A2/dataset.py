@@ -1,4 +1,5 @@
 from datasets import Dataset, DatasetDict, IterableDataset, IterableDatasetDict
+from datasets import load_dataset
 
 
 def align_labels_with_tokens(
@@ -21,6 +22,19 @@ def align_labels_with_tokens(
         A list of aligned labels.
     """
     # Write your code here.
+    aligned_labels = []
+    previous_word_id = None
+
+    for word_id in word_ids:
+        if word_id is None:  # Special tokens
+            aligned_labels.append(-100)
+        elif word_id != previous_word_id:  # Beginning of a new word
+            aligned_labels.append(labels[word_id])
+        else:  # Inside a word
+            aligned_labels.append(labels[word_id])  # No "B-" to "I-" conversion for integers
+        previous_word_id = word_id
+
+    return aligned_labels
 
 
 def tokenize_and_align_labels(examples: dict, tokenizer) -> dict:
@@ -77,7 +91,8 @@ def build_dataset() -> DatasetDict | Dataset | IterableDatasetDict | IterableDat
         raw_datasets["test"] = load_dataset('tomaarsen/MultiCoNER', 'multi', split="test")
     """
     # Write your code here.
-    raw_datasets["test"] = load_dataset('tomaarsen/MultiCoNER', 'multi', split="test")
+    raw_datasets = load_dataset('tomaarsen/MultiCoNER', 'multi')
+    return raw_datasets
 
 
 def preprocess_data(raw_datasets: DatasetDict, tokenizer) -> DatasetDict:

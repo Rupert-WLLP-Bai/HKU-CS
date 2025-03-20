@@ -1,4 +1,5 @@
 import os
+import torch
 
 from dataset import build_dataset, preprocess_data
 from model import initialize_model
@@ -7,13 +8,21 @@ from trainer import build_trainer
 from utils import not_change_test_dataset, set_random_seeds
 
 # Configuration Constants
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
 
 
 def main():
     """
     Main function to execute model training and evaluation.
     """
+    # Debug: Check if GPU is available
+    if torch.cuda.is_available():
+        print(f"Using GPU: {torch.cuda.get_device_name(0)}")
+    else:
+        print("GPU not available. Using CPU.")
+    
+    
     # Set random seeds for reproducibility
     set_random_seeds()
 
@@ -36,6 +45,10 @@ def main():
         tokenizer=tokenizer,
         tokenized_datasets=tokenized_datasets,
     )
+    
+    # Debug: Check if the trainer is using GPU
+    print(f"Trainer device: {trainer.args.device}")
+    
     trainer.train()
 
     # Evaluate the model on the test dataset
