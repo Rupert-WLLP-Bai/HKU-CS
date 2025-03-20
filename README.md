@@ -58,11 +58,15 @@
 | ---------- | --------- | --------- | --------- | --------- | ----- |
 | 0          | 2025-1-14 | 2025-2-11 | 2025-2-15 | Y         |       |
 | 1          | 2025-2-7  | 2025-2-11 | 2025-2-21 | Y         |       |
-| 2          | 2025-1-23 |           | 2025-2-28 |           |       |
+| 2          | 2025-1-23 | 2025-2-25 | 2025-2-28 | Y         |       |
+| 3          | 2025-2-24 | 2025-2-27 | 2025-3-7  | Y         |       |
+| 4          | 2025-3-4  | 2025-3-7  | 2025-3-28 | Y         |       |
 
 ### COMP7404D - Computational intelligence and machine learning
 | Assignment | Opened | Finished | Deadline | Submitted | Grade |
 | ---------- | ------ | -------- | -------- | --------- | ----- |
+| 1          |        |          |          |           |       |
+| 2          |        |          |          |           |       |
 
 ### COMP7607B - Natural language processing
 | Assignment | Opened | Finished | Deadline  | Submitted | Grade |
