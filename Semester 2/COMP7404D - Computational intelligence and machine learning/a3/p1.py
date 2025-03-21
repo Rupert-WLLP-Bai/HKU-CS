@@ -70,62 +70,56 @@ def play_episode(problem):
 
     while True:
         intended_action = get_intended_action(policy, state)
-        if intended_action == "exit":
-            actual_action = "exit"
-            break
-        
-        actual_action = apply_noise(intended_action, noise)
-        next_state = get_next_state(grid, state, actual_action)
+        if intended_action != "exit":     
+            actual_action = apply_noise(intended_action, noise)
+            next_state = get_next_state(grid, state, actual_action)
 
-        reward = living_reward
-        cumulative_reward = round(cumulative_reward + reward, 2)
+            reward = living_reward
+            cumulative_reward = round(cumulative_reward + reward, 2)
 
-        experience += f"Taking action: {actual_action} (intended: {intended_action})\n"
-        experience += f"Reward received: {reward}\n"
-        experience += "New state:\n"
-
-        # Reset the previous position of 'P' to '_'
-        prev_i, prev_j = state
-        grid[prev_i][prev_j] = "_"  # Clear the previous position
-
-        new_grid = [row.copy() for row in grid]
-        i, j = next_state
-        new_grid[i][j] = "P"
-        
-        # print(f"i: {i}, j: {j}, start_i: {start_i}, start_j: {start_j}")
-        
-        # If i,j is not the start state, put 'S' back
-        if i != start_i or j != start_j:
-            new_grid[start_i][start_j] = "S"
-        
-        for row in new_grid:
-            experience += "".join(f"{cell:>5}" for cell in row) + "\n"
-
-        experience += f"Cumulative reward sum: {cumulative_reward}\n"
-        experience += "-" * 44 + " \n"
-
-        if grid[i][j] in ["1", "-1"]:
-            # Handle exit logic
-            exit_reward = 1.0 if grid[i][j] == "1" else -1.0
-            cumulative_reward = round(cumulative_reward + exit_reward, 2)
-
-            experience += f"Taking action: exit (intended: exit)\n"
-            experience += f"Reward received: {exit_reward}\n"
+            experience += f"Taking action: {actual_action} (intended: {intended_action})\n"
+            experience += f"Reward received: {reward}\n"
             experience += "New state:\n"
 
-            final_grid = [row.copy() for row in grid]
-            final_grid[i][j] = grid[i][j]
+            # Reset the previous position of 'P' to '_'
+            prev_i, prev_j = state
+            grid[prev_i][prev_j] = "_"  # Clear the previous position
+
+            new_grid = [row.copy() for row in grid]
+            i, j = next_state
+            new_grid[i][j] = "P"
             
-            # Put 'S' back
-            final_grid[start_i][start_j] = "S"
+            # If i,j is not the start state, put 'S' back
+            if i != start_i or j != start_j:
+                new_grid[start_i][start_j] = "S"
             
-            for row in final_grid:
+            for row in new_grid:
                 experience += "".join(f"{cell:>5}" for cell in row) + "\n"
 
+            experience += f"Cumulative reward sum: {cumulative_reward}\n"
+            experience += "-" * 44 + " \n"
+            
+            state = next_state
+        
+        else:
+            # handle the exit action
+            i, j = state
+            reward = float(grid[i][j])
+            cumulative_reward = round(cumulative_reward + reward, 2)
+            experience += f"Taking action: {intended_action} (intended: {intended_action})\n"
+            experience += f"Reward received: {reward}\n"
+            experience += "New state:\n"
+            
+            new_grid = [row.copy() for row in grid]
+            
+            if i != start_i or j != start_j:
+                new_grid[start_i][start_j] = "S"
+            
+            for row in new_grid:
+                experience += "".join(f"{cell:>5}" for cell in row) + "\n"
+                
             experience += f"Cumulative reward sum: {cumulative_reward}"
             break
-
-        state = next_state
 
     return experience
 

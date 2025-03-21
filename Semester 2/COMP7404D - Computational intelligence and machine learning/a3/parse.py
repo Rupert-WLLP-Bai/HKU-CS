@@ -13,7 +13,7 @@ def read_grid_mdp_problem_p1(file_path):
     current_section = None
     for line in lines:
         line = line.strip()
-        if not line or line.startswith("#"):
+        if not line:
             continue
 
         if line.startswith("seed:"):
