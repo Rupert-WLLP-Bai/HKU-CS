@@ -1,6 +1,6 @@
 import sys, grader, parse
-
 import numpy as np
+
 
 def apply_noise(action, noise):
     """Returns the possible stochastic actions due to noise."""
@@ -12,6 +12,7 @@ def apply_noise(action, noise):
     }
     return transition[action]
 
+
 def value_iteration(problem):
     """Performs value iteration for a given MDP problem."""
     grid = problem["grid"]
@@ -19,7 +20,7 @@ def value_iteration(problem):
     noise = problem["noise"]
     living_reward = problem["livingReward"]
     iterations = problem["iterations"]
-    
+
     rows, cols = len(grid), len(grid[0])
     V = np.zeros((rows, cols))
     policy = [["" for _ in range(cols)] for _ in range(rows)]
@@ -35,7 +36,7 @@ def value_iteration(problem):
                     result += "|{:7.2f}|".format(V[i][j])
             result += "\n"
         return result
-    
+
     def format_policy(policy, grid):
         result = ""
         for i in range(len(policy)):
@@ -48,31 +49,36 @@ def value_iteration(problem):
                     result += f"| {policy[i][j]} |"
             result += "\n"
         return result
-    
+
     moves = {"N": (-1, 0), "E": (0, 1), "S": (1, 0), "W": (0, -1)}
     actions = ["N", "E", "S", "W"]
-    
+
     return_value += "V_k=0\n" + format_grid(V, grid)
-    
+
     for k in range(1, iterations):
         new_V = np.copy(V)
         for i in range(rows):
             for j in range(cols):
                 if grid[i][j] == "#":
                     continue  # Skip walls
-                if isinstance(grid[i][j], (int, float)) or str(grid[i][j]).lstrip('-').isdigit():
+                if (
+                    isinstance(grid[i][j], (int, float))
+                    or str(grid[i][j]).lstrip("-").isdigit()
+                ):
                     new_V[i][j] = float(grid[i][j])  # Terminal state
                     policy[i][j] = "exit"
                     continue
-                
-                best_value = float('-inf')
+
+                best_value = float("-inf")
                 best_action = "N"
-                
+
                 for action in actions:
                     expected_value = 0.0
                     for next_action, prob in apply_noise(action, noise):
                         di, dj = moves[next_action]
-                        ni, nj = max(0, min(i + di, rows - 1)), max(0, min(j + dj, cols - 1))
+                        ni, nj = max(0, min(i + di, rows - 1)), max(
+                            0, min(j + dj, cols - 1)
+                        )
                         if grid[ni][nj] == "#":
                             ni, nj = i, j  # Stay in place if hitting a wall
                         expected_value += prob * V[ni][nj]
@@ -80,18 +86,19 @@ def value_iteration(problem):
                     q_value = living_reward + discount * expected_value
                     # print(f"State ({i},{j}) - Action {action}: Q-Value = {q_value}, Best Value = {best_value}, Best Action = {best_action}, k = {k}")
 
-                    if q_value - best_value > 1e-6: # using '>' will fail the test case 3
+                    if (
+                        q_value - best_value > 1e-6
+                    ):  # using '>' will fail the test case 3
                         best_value = q_value
                         best_action = action
 
-                
                 new_V[i][j] = best_value
                 policy[i][j] = best_action
-        
+
         V = new_V
         return_value += f"V_k={k}\n" + format_grid(V, grid)
         return_value += f"pi_k={k}\n" + format_policy(policy, grid)
-    
+
     return return_value.strip()
 
 

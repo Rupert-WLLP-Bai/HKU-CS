@@ -1,5 +1,4 @@
 import sys, grader, parse
-
 import random
 
 
@@ -51,15 +50,15 @@ def play_episode(problem):
     noise = problem["noise"]
     living_reward = problem["livingReward"]
     seed = problem["seed"]
-    
+
     random.seed(seed)
 
     state = find_start(grid)
-    
+
     # replace the 'S' with 'P'
     start_i, start_j = state
     grid[start_i][start_j] = "P"
-    
+
     cumulative_reward = 0.0
     experience = "Start state:\n"
 
@@ -70,14 +69,16 @@ def play_episode(problem):
 
     while True:
         intended_action = get_intended_action(policy, state)
-        if intended_action != "exit":     
+        if intended_action != "exit":
             actual_action = apply_noise(intended_action, noise)
             next_state = get_next_state(grid, state, actual_action)
 
             reward = living_reward
             cumulative_reward = round(cumulative_reward + reward, 2)
 
-            experience += f"Taking action: {actual_action} (intended: {intended_action})\n"
+            experience += (
+                f"Taking action: {actual_action} (intended: {intended_action})\n"
+            )
             experience += f"Reward received: {reward}\n"
             experience += "New state:\n"
 
@@ -88,36 +89,38 @@ def play_episode(problem):
             new_grid = [row.copy() for row in grid]
             i, j = next_state
             new_grid[i][j] = "P"
-            
+
             # If i,j is not the start state, put 'S' back
             if i != start_i or j != start_j:
                 new_grid[start_i][start_j] = "S"
-            
+
             for row in new_grid:
                 experience += "".join(f"{cell:>5}" for cell in row) + "\n"
 
             experience += f"Cumulative reward sum: {cumulative_reward}\n"
             experience += "-" * 44 + " \n"
-            
+
             state = next_state
-        
+
         else:
             # handle the exit action
             i, j = state
             reward = float(grid[i][j])
             cumulative_reward = round(cumulative_reward + reward, 2)
-            experience += f"Taking action: {intended_action} (intended: {intended_action})\n"
+            experience += (
+                f"Taking action: {intended_action} (intended: {intended_action})\n"
+            )
             experience += f"Reward received: {reward}\n"
             experience += "New state:\n"
-            
+
             new_grid = [row.copy() for row in grid]
-            
+
             if i != start_i or j != start_j:
                 new_grid[start_i][start_j] = "S"
-            
+
             for row in new_grid:
                 experience += "".join(f"{cell:>5}" for cell in row) + "\n"
-                
+
             experience += f"Cumulative reward sum: {cumulative_reward}"
             break
 
