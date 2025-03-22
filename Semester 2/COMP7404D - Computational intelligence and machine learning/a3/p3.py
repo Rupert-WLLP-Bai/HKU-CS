@@ -78,9 +78,9 @@ def value_iteration(problem):
                         expected_value += prob * V[ni][nj]
 
                     q_value = living_reward + discount * expected_value
-                    # print(f"State ({i},{j}) - Action {action}: Q-Value = {q_value}")
+                    # print(f"State ({i},{j}) - Action {action}: Q-Value = {q_value}, Best Value = {best_value}, Best Action = {best_action}, k = {k}")
 
-                    if q_value > best_value:
+                    if q_value - best_value > 1e-6: # using '>' will fail the test case 3
                         best_value = q_value
                         best_action = action
 
