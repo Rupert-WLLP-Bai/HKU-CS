@@ -5,3 +5,6 @@ accelerate
 seqeval
 pytest
 evaluate
+protobuf
+tiktoken
+sentencepiece

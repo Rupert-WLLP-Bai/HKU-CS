@@ -1,6 +1,6 @@
 from transformers import DataCollatorForTokenClassification, Trainer, TrainingArguments
 
-from constants import OUTPUT_DIR
+from constants import LOG_DIR, OUTPUT_DIR
 from evaluation import compute_metrics
 
 
@@ -17,14 +17,21 @@ def create_training_arguments() -> TrainingArguments:
     """
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
+        num_train_epochs=10,
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
-        load_best_model_at_end=True,
-        push_to_hub=False,
         eval_strategy="steps",
+        eval_steps=1000,
         save_steps=5000,
         logging_steps=1000,
+        learning_rate=3e-5,
+        per_device_train_batch_size=16,
+        per_device_eval_batch_size=16,
+        warmup_steps=500,
+        fp16=True,
+        load_best_model_at_end=True,
+        save_total_limit=5,
     )
 
     return training_args

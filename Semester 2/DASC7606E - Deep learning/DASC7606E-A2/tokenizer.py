@@ -13,6 +13,7 @@ def initialize_tokenizer() -> PreTrainedTokenizer | PreTrainedTokenizerFast:
     # But make sure the tokenizer is the same as the model.
     """
     tokenizer: PreTrainedTokenizer | PreTrainedTokenizerFast = AutoTokenizer.from_pretrained(
-        pretrained_model_name_or_path=MODEL_CHECKPOINT
+        pretrained_model_name_or_path=MODEL_CHECKPOINT,
+        use_fast=True,
     )
     return tokenizer

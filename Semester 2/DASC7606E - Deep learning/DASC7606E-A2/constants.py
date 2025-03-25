@@ -1,6 +1,7 @@
 SEED = 42  # Random seed for reproducibility
-MODEL_CHECKPOINT = "bert-base-cased"  # Configurable model checkpoint
+MODEL_CHECKPOINT = "microsoft/deberta-v3-base"  # Configurable model checkpoint
 OUTPUT_DIR = "checkpoints"  # Configurable output directory
+LOG_DIR = "logs"  # Configurable log directory
 
 LABEL_TO_ID = {
     "O": 0,
