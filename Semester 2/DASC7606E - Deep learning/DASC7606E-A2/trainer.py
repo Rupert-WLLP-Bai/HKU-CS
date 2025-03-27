@@ -1,84 +1,106 @@
+import torch
 from transformers import DataCollatorForTokenClassification, Trainer, TrainingArguments
 
 from constants import OUTPUT_DIR
 from evaluation import compute_metrics
 
+class BiLSTMTrainer(Trainer):
+    """自定义训练器，处理XLM-RoBERTa+BiLSTM模型输出"""
+    
+    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+        """重写计算损失函数方法，支持num_items_in_batch参数"""
+        outputs = model(**inputs)
+        loss = outputs["loss"] if isinstance(outputs, dict) else outputs[0]
+        
+        return (loss, outputs) if return_outputs else loss
+    
+    def prediction_step(self, model, inputs, prediction_loss_only, ignore_keys=None):
+        """重写预测步骤方法"""
+        has_labels = all(inputs.get(k) is not None for k in ["labels"])
+        inputs = self._prepare_inputs(inputs)
+        
+        # 执行前向传播
+        with torch.no_grad():
+            outputs = model(**inputs)
+            
+            if isinstance(outputs, dict):
+                logits = outputs["logits"]
+                # 不要调用 .item()，保持为张量
+                loss = outputs["loss"] if "loss" in outputs else None
+            else:
+                logits = outputs[1]
+                loss = outputs[0]  # 去掉 .item()
+        
+        if prediction_loss_only:
+            return (loss, None, None)
+        
+        if has_labels:
+            labels = inputs["labels"]
+        else:
+            labels = None
+            
+        return (loss, logits, labels)
+
 
 def create_training_arguments() -> TrainingArguments:
-    """
-    Create and return the training arguments for the model.
-
-    Returns:
-        Training arguments for the model.
-
-    NOTE: You can change the training arguments as needed.
-    # Below is an example of how to create training arguments. You are free to change this.
-    # ref: https://huggingface.co/transformers/main_classes/trainer.html#transformers.TrainingArguments
-    """
+    """创建训练参数"""
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
-        num_train_epochs=5,               # 增加轮次
+        num_train_epochs=8,
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
         
         # 评估与保存策略
-        eval_strategy="steps",
-        eval_steps=500,                   # 更频繁评估
+        eval_strategy="steps",  # 使用新参数名
+        eval_steps=500,
         save_strategy="steps",
-        save_steps=2000,                   # 更频繁保存
-        logging_steps=500,                # 更频繁记录
-        save_total_limit=3,               # 节省空间
+        save_steps=1000,
+        logging_steps=500,
+        save_total_limit=5,
         
-        # 学习率与优化器设置
-        learning_rate=5e-5,               # 降低学习率
-        warmup_ratio=0.1,                 # 添加预热阶段
-        lr_scheduler_type="linear",       # 改为线性衰减
+        # 学习率与优化器设置 - 调整以适应BiLSTM
+        learning_rate=8e-5,
+        # warmup_ratio=0.1,
+        lr_scheduler_type="cosine",
         
         # 批量大小与累积
-        per_device_train_batch_size=8,    # 降低单批量大小
-        per_device_eval_batch_size=16,    # 评估批量保持不变
-        gradient_accumulation_steps=4,    # 增加累积步骤
+        per_device_train_batch_size=8,
+        per_device_eval_batch_size=16,
+        gradient_accumulation_steps=4,
         
         # 正则化与稳定性
-        weight_decay=0.01,                # 调整权重衰减
-        max_grad_norm=2.0,                # 增加梯度裁剪阈值
-        label_smoothing_factor=0.1,       # 添加标签平滑
+        weight_decay=0.01,
+        max_grad_norm=1.0,
+        label_smoothing_factor=0.1,
         
         # 混合精度
-        fp16=True,                        # 保持混合精度训练
+        fp16=True,
         
-        # 模型选择与早停
-        load_best_model_at_end=True,      # 加载最佳模型
-        metric_for_best_model="f1",       # 以F1为标准
-        greater_is_better=True,           # 更高的F1更好
+        # 模型选择
+        load_best_model_at_end=True,
+        metric_for_best_model="f1",
+        greater_is_better=True,
     )
-
+    
     return training_args
 
 
-def build_trainer(model, tokenizer, tokenized_datasets) -> Trainer:
-    """
-    Build and return the trainer object for training and evaluation.
-
-    Args:
-        model: Model for token classification.
-        tokenizer: Tokenizer object.
-        tokenized_datasets: Tokenized datasets.
-
-    Returns:
-        Trainer object for training and evaluation.
-    """
+def build_trainer(model, tokenizer, tokenized_datasets) -> BiLSTMTrainer:
+    """构建训练器对象"""
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
-
-    training_args: TrainingArguments = create_training_arguments()
-
-    return Trainer(
+    
+    training_args = create_training_arguments()
+    
+    # 使用自定义训练器，修正参数名
+    trainer = BiLSTMTrainer(
         model=model,
         args=training_args,
         train_dataset=tokenized_datasets["train"],
         eval_dataset=tokenized_datasets["validation"],
         data_collator=data_collator,
         compute_metrics=compute_metrics,
-        processing_class=tokenizer,
+        processing_class=tokenizer,  # 推荐使用 processing_class 而非 tokenizer
     )
+    
+    return trainer

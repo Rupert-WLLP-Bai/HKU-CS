@@ -6,9 +6,12 @@ from tokenizer import initialize_tokenizer
 from trainer import build_trainer
 from utils import not_change_test_dataset, set_random_seeds
 
+import torch
+
 # Configuration Constants
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
+os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
 
 
 def main():
@@ -39,6 +42,9 @@ def main():
     )
     trainer.train()
 
+    # clear cuda cache
+    torch.cuda.empty_cache()
+    
     # Evaluate the model on the test dataset
     test_metrics = trainer.evaluate(
         eval_dataset=tokenized_datasets["test"],

@@ -1,4 +1,5 @@
 import evaluate
+import torch
 from transformers.trainer_utils import EvalPrediction
 from constants import ID_TO_LABEL
 
@@ -25,6 +26,10 @@ def compute_metrics(eval_predictions: EvalPrediction) -> dict[str, float]:
     # Write your code here.
     predictions, labels = eval_predictions.predictions, eval_predictions.label_ids
 
+    # CRF 解码后的 predictions 是一个列表，需要转换为张量
+    if isinstance(predictions, list):
+        predictions = torch.tensor(predictions)
+    
     # Convert predictions to label IDs
     predictions = predictions.argmax(axis=-1)
 
