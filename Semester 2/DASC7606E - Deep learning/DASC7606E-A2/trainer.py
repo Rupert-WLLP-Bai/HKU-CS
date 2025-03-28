@@ -55,7 +55,7 @@ def create_training_arguments() -> TrainingArguments:
         eval_strategy="steps",  # 使用新参数名
         eval_steps=500,
         save_strategy="steps",
-        save_steps=1000,
+        save_steps=2000,
         logging_steps=500,
         save_total_limit=5,
         
