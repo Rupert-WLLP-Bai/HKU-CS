@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MQTT Flask Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        #messages { height: 1000px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+    </style>
+</head>
+<body>
+    <h1>MQTT Messages Dashboard</h1>
+    <p>Subscribed to topic: <strong>flask/esp32/bjh</strong></p>
+    <div id="messages"></div>
+
+    <script>
+        const socket = io();
+        const messagesDiv = document.getElementById('messages');
+    
+        // 加载历史消息
+        fetch('/messages')
+            .then(response => response.json())
+            .then(data => {
+                data.reverse().forEach(msg => {
+                    messagesDiv.innerHTML += `<p>${msg.timestamp} - ${msg.data}</p>`;
+                });
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+    
+        // 实时接收 MQTT 消息
+        socket.on('mqtt_message', function(data) {
+            messagesDiv.innerHTML += `<p>${data.timestamp} - ${data.data}</p>`;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        });
+    </script>
+    
+</body>
+</html>
