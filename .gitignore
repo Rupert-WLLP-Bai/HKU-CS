@@ -9,3 +9,11 @@
 **/*.pth
 **/*.csv
 **/checkpoints
+**/*.mp4
+**/.cache
+**/build
+
+# for esp-idf components
+**/managed_components
+**/*.tflite
+**/*.keras
