@@ -1,14 +1,17 @@
 ![](https://pokfield.hku.hk/content/uploads/2021/04/University_of_Hong_Kong-Logo.wine_-e1615528764350-1024x197-1.png)
 
 # **MSc in Computer Science 2024~2025**
+
 ## Semester 1
+
 ### COMP7103C - Data Mining
+
 | Assignment     | Opened     | Finished   | Deadline   | Submitted | Grade |
 | -------------- | ---------- | ---------- | ---------- | --------- | ----- |
 | Classification | 2024-11-8  | 2024-11-10 | 2024-12-8  | N         |       |
 | Project        | 2024-10-24 | 2024-11-22 | 2024-11-22 | N         |       |
 
-### COMP7308  - Introduction to unmanned systems
+### COMP7308 - Introduction to unmanned systems
 
 | Assignment | Opened     | Finished   | Deadline   | Submitted | Grade   |
 | ---------- | ---------- | ---------- | ---------- | --------- | ------- |
@@ -40,6 +43,7 @@
 | 2          | 2024-10-29 | 2024-11-11 | 2024-11-19 | Y         | 80.38/100 |
 
 ### Final
+
 | Date       | Time              | Course Code | Description                             | Venue                                                   |
 | ---------- | ----------------- | ----------- | --------------------------------------- | ------------------------------------------------------- |
 | Dec 9 MON  | 6:30 pm - 8:30 pm | COMP7103    | Data mining                             | CPD-LG.07-10, Centennial Campus                         |
@@ -49,11 +53,16 @@
 | Dec 17 TUE | 6:30 pm - 8:30 pm | COMP7409    | Machine learning in trading and finance | CPD-LG.07-10, Centennial Campus                         |
 
 ## Semester 2
+
 ### COMP7106B - Big data management
-| Assignment | Opened | Finished | Deadline | Submitted | Grade |
-| ---------- | ------ | -------- | -------- | --------- | ----- |
+
+| Assignment | Opened    | Finished | Deadline  | Submitted | Grade |
+| ---------- | --------- | -------- | --------- | --------- | ----- |
+| 1          | 2025-2-13 | 2025-3-5 | 2025-3-7  | Y         | 9/10  |
+| 2          | 2025-4-4  | 2025-4-9 | 2025-4-25 | Y         |       |
 
 ### COMP7310 - Artificial intelligence of things
+
 | Assignment | Opened    | Finished  | Deadline  | Submitted | Grade |
 | ---------- | --------- | --------- | --------- | --------- | ----- |
 | 0          | 2025-1-14 | 2025-2-11 | 2025-2-15 | Y         |       |
@@ -61,19 +70,38 @@
 | 2          | 2025-1-23 | 2025-2-25 | 2025-2-28 | Y         |       |
 | 3          | 2025-2-24 | 2025-2-27 | 2025-3-7  | Y         |       |
 | 4          | 2025-3-4  | 2025-3-7  | 2025-3-28 | Y         |       |
+| 5          | 2025-3-27 |           | 2025-4-25 |           |       |
+| project    | 2025-3-5  |           | 2025-4-18 |           |       |
 
 ### COMP7404D - Computational intelligence and machine learning
-| Assignment | Opened | Finished | Deadline | Submitted | Grade |
-| ---------- | ------ | -------- | -------- | --------- | ----- |
-| 1          |        |          |          |           |       |
-| 2          |        |          |          |           |       |
+
+| Assignment | Opened    | Finished  | Deadline  | Submitted | Grade  |
+| ---------- | --------- | --------- | --------- | --------- | ------ |
+| 1          | 2025-2-18 | 2025-2-27 | 2025-3-4  | Y         | 88/100 |
+| 2          | 2025-2-25 | 2025-3-10 | 2025-3-11 | Y         | 86/100 |
+| 3          | 2025-3-18 | 2025-4-2  | 2025-4-8  | Y         |        |
+| 4          | 2025-4-1  | 2025-4-9  | 2025-4-22 | Y         |        |
+| project    | 2025-2-25 | 2025-4-1  | 2025-4-2  | Y         |        |
 
 ### COMP7607B - Natural language processing
-| Assignment | Opened | Finished | Deadline  | Submitted | Grade |
-| ---------- | ------ | -------- | --------- | --------- | ----- |
-| 1          |        |          | 2025-3-20 |           |       |
+
+| Assignment | Opened    | Finished  | Deadline  | Submitted | Grade |
+| ---------- | --------- | --------- | --------- | --------- | ----- |
+| 1          | 2025-1-23 | 2025-3-16 | 2025-3-20 | Y         |       |
+| 2          | 2025-3-6  |           | 2025-4-24 |           |       |
 
 ### DASC7606E - Deep learning
-| Assignment | Opened | Finished | Deadline  | Submitted | Grade |
-| ---------- | ------ | -------- | --------- | --------- | ----- |
-| 1          |        |          | 2025-3-17 |           |       |
+
+| Assignment | Opened    | Finished  | Deadline  | Submitted | Grade |
+| ---------- | --------- | --------- | --------- | --------- | ----- |
+| 1          | 2025-1-27 | 2025-3-15 | 2025-3-17 | Y         |       |
+| 2          | 2025-3-17 |           | 2025-4-14 |           |       |
+
+### Final
+
+| Date       | Time              | Course Code | Description                                     | Venue                                     |
+| ---------- | ----------------- | ----------- | ----------------------------------------------- | ----------------------------------------- |
+| May 10 SAT | 2:30 pm - 4:30 pm | COMP7106    | Big data management                             | CPD-LG.07-10, Centennial Campus           |
+| May 12 MON | 6:30 pm - 8:30 pm | COMP7404    | Computational intelligence and machine learning | Rm 2 Library Ext., Rm 3 Library Ext.      |
+| May 15 THU | 6:30 pm - 8:30 pm | COMP7607    | Natural language processing                     | CPD-LG.07-10, Centennial Campus           |
+| May 19 MON | 6:30 pm - 8:30 pm | DASC7606    | Deep learning                                   | Multi-purpose Zone, Level 3, Main Library |
