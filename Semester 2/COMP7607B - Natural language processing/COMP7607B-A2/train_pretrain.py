@@ -1,8 +1,10 @@
 import argparse
-
 import warnings
+
 import torch
+
 from trainer import PreTrainer
+from utils import set_random_seeds
 
 warnings.filterwarnings("ignore")
 
@@ -28,18 +30,23 @@ def parse_args():
     parser.add_argument("--dim", default=512, type=int)
     parser.add_argument("--n_layers", default=8, type=int)
     parser.add_argument("--max_seq_len", default=512, type=int)
+    parser.add_argument("--max_new_tokens", type=int, default=1024)
     parser.add_argument("--data_path", type=str, default="./data/pretrain.jsonl")
 
     args = parser.parse_args()
-    args.wandb_run_name = f"MiniMind-Pretrain-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+    args.wandb_run_name = (
+        f"MiniMind-Pretrain-Epoch-{args.epochs}-BatchSize-{args.batch_size}-LearningRate-{args.learning_rate}"
+    )
 
     return args
 
 
 def main():
+    set_random_seeds()
     args = parse_args()
     trainer = PreTrainer(args)
     trainer.run()
+    trainer.eval()
 
 
 if __name__ == "__main__":

@@ -30,3 +30,4 @@ torch==2.2.2
 torchvision==0.17.2
 pytest==8.3.5
 huggingface_hub==0.24.0
+unbabel-comet==2.2.5

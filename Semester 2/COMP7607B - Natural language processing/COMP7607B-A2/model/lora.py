@@ -20,7 +20,7 @@ class LoRA(nn.Module):
         # Write your code here
         self.A = nn.Parameter(torch.randn(in_features, rank) * 0.02)
         self.B = nn.Parameter(torch.zeros(rank, out_features))
-
+        
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         """Forward pass through the LoRA module."""
         # Write your code here
@@ -55,6 +55,7 @@ def apply_lora(model: nn.Module, rank: int = 16):
         def make_forward_with_lora(orig_forward, lora_module):
             def forward_with_lora(x):
                 return orig_forward(x) + lora_module(x)
+
             return forward_with_lora
 
         # Replace the forward method

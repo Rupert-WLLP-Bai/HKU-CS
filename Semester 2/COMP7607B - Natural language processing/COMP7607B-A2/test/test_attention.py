@@ -1,8 +1,9 @@
+import numpy as np
 import pytest
+import torch
+
 from model.config import LMConfig
 from model.model import Attention
-import torch
-import numpy as np
 
 
 @pytest.fixture
