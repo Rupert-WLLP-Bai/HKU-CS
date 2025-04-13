@@ -32,11 +32,19 @@ def save_to_db(message):
         conn.commit()
 
 # 从 SQLite 读取消息
-def get_messages():
+def get_messages(limit=20):
     with sqlite3.connect(DB_FILE) as conn:
         cursor = conn.cursor()
-        cursor.execute("SELECT timestamp, message FROM messages ORDER BY id DESC LIMIT 20")
+        cursor.execute("SELECT timestamp, message FROM messages ORDER BY id DESC LIMIT ?", (limit,))
         return cursor.fetchall()
+
+# 获取最新的一条消息
+def get_latest_message():
+    with sqlite3.connect(DB_FILE) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT timestamp, message FROM messages ORDER BY id DESC LIMIT 1")
+        result = cursor.fetchone()
+        return result if result else (None, None)
 
 # MQTT 回调函数
 def on_connect(client, userdata, flags, rc):
@@ -63,8 +71,13 @@ def index():
 
 @app.route('/messages')
 def messages():
-    messages = get_messages()
+    messages = get_messages(limit=-1)
     return jsonify([{'timestamp': msg[0], 'data': msg[1]} for msg in messages])
+
+@app.route('/latest_message')
+def latest_message():
+    timestamp, message = get_latest_message()
+    return jsonify({'timestamp': timestamp, 'data': message})
 
 if __name__ == '__main__':
     init_db()  # 初始化数据库

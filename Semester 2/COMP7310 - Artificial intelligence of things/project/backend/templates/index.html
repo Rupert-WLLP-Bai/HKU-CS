@@ -2,38 +2,345 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MQTT Flask Dashboard</title>
+    <title>ESP32 Monitoring Dashboard</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        #messages { height: 1000px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }
+        body { 
+            font-family: 'Roboto', Arial, sans-serif; 
+            margin: 0; 
+            padding: 20px;
+            background-color: #f5f7fb;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e6ed;
+        }
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        @media (max-width: 900px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        .chart-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            height: 350px;
+        }
+        .status-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .status-card {
+            flex: 1;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+            text-align: center;
+        }
+        .status-value {
+            font-size: 2.5rem;
+            font-weight: 500;
+            margin: 10px 0;
+        }
+        .status-label {
+            font-size: 1rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .messages-container { 
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            padding: 20px;
+        }
+        #messages { 
+            height: 200px; 
+            overflow-y: scroll; 
+            border: 1px solid #e0e6ed; 
+            padding: 10px;
+            border-radius: 5px;
+        }
+        #messages p {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .chart-title {
+            margin-top: 0;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        .motion-active {
+            color: #38a169;
+            animation: pulse 1.5s infinite;
+        }
+        .motion-inactive {
+            color: #e53e3e;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
     </style>
 </head>
 <body>
-    <h1>MQTT Messages Dashboard</h1>
-    <p>Subscribed to topic: <strong>flask/esp32/bjh</strong></p>
-    <div id="messages"></div>
+    <div class="container">
+        <div class="header">
+            <h1>ESP32 Monitoring Dashboard</h1>
+            <p>Topic: <strong>flask/esp32/bjh</strong></p>
+        </div>
+        
+        <div class="status-container">
+            <div class="status-card">
+                <div class="status-label">Motion Status</div>
+                <div id="motion-status" class="status-value motion-inactive">No Motion</div>
+            </div>
+            <div class="status-card">
+                <div class="status-label">Current Breathing Rate</div>
+                <div id="current-rate" class="status-value">-- BPM</div>
+            </div>
+        </div>
+        
+        <div class="charts-container">
+            <div class="chart-card">
+                <h3 class="chart-title">Motion Detection Timeline</h3>
+                <div id="motionChart"></div>
+            </div>
+            <div class="chart-card">
+                <h3 class="chart-title">Breathing Rate Trend</h3>
+                <div id="breathingChart"></div>
+            </div>
+        </div>
+        
+        <div class="messages-container">
+            <h3 class="chart-title">Raw MQTT Messages</h3>
+            <div id="messages"></div>
+        </div>
+    </div>
 
     <script>
         const socket = io();
         const messagesDiv = document.getElementById('messages');
+        const motionStatus = document.getElementById('motion-status');
+        const currentRate = document.getElementById('current-rate');
+        
+        // Data storage
+        const maxDataPoints = 50;
+        const motionData = [];
+        const breathingData = [];
+        
+        // Initialize motion chart
+        const motionChartOptions = {
+            series: [{
+                name: 'Motion',
+                data: []
+            }],
+            chart: {
+                height: 280,
+                type: 'line',
+                animations: {
+                    enabled: false
+                },
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#3182ce'],
+            stroke: {
+                width: 3,
+                curve: 'stepline',
+            },
+            xaxis: {
+                type: 'datetime',
+                labels: {
+                    datetimeUTC: false,
+                    format: 'HH:mm:ss'
+                }
+            },
+            yaxis: {
+                min: -0.1,
+                max: 1.1,
+                tickAmount: 1,
+                labels: {
+                    formatter: function(val) {
+                        return val === 0 ? 'No' : val === 1 ? 'Yes' : '';
+                    }
+                }
+            },
+            markers: {
+                size: 4,
+                strokeWidth: 0
+            },
+            tooltip: {
+                x: {
+                    format: 'HH:mm:ss'
+                },
+                y: {
+                    formatter: function(val) {
+                        return val === 0 ? 'No Motion' : 'Motion Detected';
+                    }
+                }
+            }
+        };
+
+        // Initialize breathing chart
+        const breathingChartOptions = {
+            series: [{
+                name: 'Breathing Rate',
+                data: []
+            }],
+            chart: {
+                height: 280,
+                type: 'line',
+                animations: {
+                    enabled: false
+                },
+                toolbar: {
+                    show: false
+                }
+            },
+            colors: ['#38a169'],
+            stroke: {
+                width: 3,
+                curve: 'smooth',
+            },
+            xaxis: {
+                type: 'datetime',
+                labels: {
+                    datetimeUTC: false,
+                    format: 'HH:mm:ss'
+                }
+            },
+            yaxis: {
+                title: {
+                    text: 'Breaths per Minute'
+                },
+                min: function(min) { return min - 2 > 0 ? min - 2 : 0 }
+            },
+            markers: {
+                size: 4
+            },
+            tooltip: {
+                x: {
+                    format: 'HH:mm:ss'
+                }
+            }
+        };
+
+        const motionChart = new ApexCharts(document.querySelector("#motionChart"), motionChartOptions);
+        const breathingChart = new ApexCharts(document.querySelector("#breathingChart"), breathingChartOptions);
+        
+        motionChart.render();
+        breathingChart.render();
+        
+        // Process incoming data
+        function processData(timestamp, data) {
+            let jsonData;
+            try {
+                // Try to parse as JSON
+                jsonData = typeof data === 'string' ? JSON.parse(data) : data;
+            } catch (e) {
+                console.error('Error parsing JSON:', e);
+                return;
+            }
+            
+            // Convert timestamp to JS Date object if it's not already
+            const time = new Date(timestamp).getTime();
+            
+            // Update charts if we have the expected data
+            if ('motion' in jsonData) {
+                // Update motion status display
+                const motionValue = jsonData.motion ? 1 : 0;
+                
+                // Update status indicator
+                if (jsonData.motion) {
+                    motionStatus.textContent = 'Motion Detected';
+                    motionStatus.className = 'status-value motion-active';
+                } else {
+                    motionStatus.textContent = 'No Motion';
+                    motionStatus.className = 'status-value motion-inactive';
+                }
+                
+                // Add data to motion chart
+                motionData.push({
+                    x: time,
+                    y: motionValue
+                });
+                
+                // Limit data points
+                if (motionData.length > maxDataPoints) {
+                    motionData.shift();
+                }
+                
+                motionChart.updateSeries([{
+                    name: 'Motion',
+                    data: motionData
+                }]);
+            }
+            
+            if ('breathing_rate' in jsonData && !isNaN(parseFloat(jsonData.breathing_rate))) {
+                const rate = parseFloat(jsonData.breathing_rate);
+                
+                // Update current breathing rate display
+                currentRate.textContent = rate.toFixed(1) + ' BPM';
+                
+                // Add data to breathing rate chart
+                breathingData.push({
+                    x: time,
+                    y: rate
+                });
+                
+                // Limit data points
+                if (breathingData.length > maxDataPoints) {
+                    breathingData.shift();
+                }
+                
+                breathingChart.updateSeries([{
+                    name: 'Breathing Rate',
+                    data: breathingData
+                }]);
+            }
+        }
     
-        // 加载历史消息
+        // Load historical messages
         fetch('/messages')
             .then(response => response.json())
             .then(data => {
                 data.reverse().forEach(msg => {
                     messagesDiv.innerHTML += `<p>${msg.timestamp} - ${msg.data}</p>`;
+                    processData(msg.timestamp, msg.data);
                 });
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
     
-        // 实时接收 MQTT 消息
+        // Handle real-time MQTT messages
         socket.on('mqtt_message', function(data) {
             messagesDiv.innerHTML += `<p>${data.timestamp} - ${data.data}</p>`;
             messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            processData(data.timestamp, data.data);
         });
     </script>
-    
 </body>
 </html>
