@@ -9,3 +9,4 @@ protobuf
 tiktoken
 sentencepiece
 pytorch-crf
+nltk

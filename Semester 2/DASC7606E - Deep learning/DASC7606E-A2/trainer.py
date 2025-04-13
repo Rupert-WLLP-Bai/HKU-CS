@@ -46,14 +46,14 @@ def create_training_arguments() -> TrainingArguments:
     """创建训练参数"""
     training_args = TrainingArguments(
         output_dir=OUTPUT_DIR,
-        num_train_epochs=8,
+        num_train_epochs=3,
         overwrite_output_dir=True,
         do_train=True,
         do_eval=True,
         
         # 评估与保存策略
         eval_strategy="steps",  # 使用新参数名
-        eval_steps=500,
+        eval_steps=1000,
         save_strategy="steps",
         save_steps=2000,
         logging_steps=500,
@@ -62,11 +62,12 @@ def create_training_arguments() -> TrainingArguments:
         # 学习率与优化器设置 - 调整以适应BiLSTM
         learning_rate=8e-5,
         # warmup_ratio=0.1,
-        lr_scheduler_type="cosine",
+        warmup_steps=1000,
+        lr_scheduler_type="linear",
         
         # 批量大小与累积
-        per_device_train_batch_size=8,
-        per_device_eval_batch_size=16,
+        per_device_train_batch_size=16, # 8 
+        per_device_eval_batch_size=32, # 16
         gradient_accumulation_steps=4,
         
         # 正则化与稳定性

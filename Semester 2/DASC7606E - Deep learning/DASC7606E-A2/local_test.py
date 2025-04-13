@@ -1,5 +1,7 @@
 import os
-from transformers import Trainer
+import torch
+from transformers import Trainer, TrainingArguments
+from safetensors.torch import load_file
 
 from dataset import build_dataset, preprocess_data
 from model import initialize_model
@@ -48,15 +50,57 @@ def evaluate_model(checkpoint_path=None):
     # Initialize model with correct number of labels
     model = initialize_model()
     
-    # Build trainer without training
+    # Check what files are actually in the checkpoint directory
+    files = os.listdir(checkpoint_path)
+    print(f"Files in checkpoint directory: {files}")
+    
+    # Load model weights from safetensors file directly
+    if "model.safetensors" in files:
+        try:
+            # Use safetensors library to load the model weights
+            # Need to install: pip install safetensors
+            state_dict = load_file(os.path.join(checkpoint_path, "model.safetensors"))
+            model.load_state_dict(state_dict)
+            print("Model loaded successfully using safetensors!")
+            success = True
+        except Exception as e:
+            print(f"Error loading model with safetensors: {e}")
+            success = False
+    
+    # Alternatively, try loading with weights_only=False (not secure but may work)
+    elif "pytorch_model.bin" in files:
+        try:
+            state_dict = torch.load(
+                os.path.join(checkpoint_path, "pytorch_model.bin"),
+                map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+                weights_only=False  # Not secure, but may work
+            )
+            model.load_state_dict(state_dict)
+            print("Model loaded successfully using pytorch_model.bin!")
+            success = True
+        except Exception as e:
+            print(f"Error loading from pytorch_model.bin: {e}")
+            success = False
+    
+    # Last resort: try loading the training_args.bin file (not recommended for weights)
+    elif "training_args.bin" in files and not success:
+        try:
+            # Try to load with explicit weights_only=False (not secure but necessary)
+            args = torch.load(
+                os.path.join(checkpoint_path, "training_args.bin"), 
+                map_location=torch.device('cuda' if torch.cuda.is_available() else 'cpu'),
+                weights_only=False  # Not secure, but needed for this file
+            )
+            print("Successfully loaded training arguments, but model weights need to be loaded separately.")
+        except Exception as e:
+            print(f"Error loading training_args.bin: {e}")
+    
+    # Build trainer with the loaded model
     trainer = build_trainer(
-        model=model,
+        model=model,  # Use our loaded model
         tokenizer=tokenizer,
         tokenized_datasets=tokenized_datasets,
     )
-    
-    # Load the trained weights
-    trainer.model = type(model).from_pretrained(checkpoint_path)
     
     # Evaluate the model on the test dataset
     test_metrics = trainer.evaluate(

@@ -1,5 +1,5 @@
 SEED = 42  # Random seed for reproducibility
-MODEL_CHECKPOINT = "FacebookAI/xlm-roberta-base"  # Configurable model checkpoint
+MODEL_CHECKPOINT = "microsoft/mdeberta-v3-base"  # Configurable model checkpoint
 OUTPUT_DIR = "checkpoints"  # Configurable output directory
 LOG_DIR = "logs"  # Configurable log directory
 

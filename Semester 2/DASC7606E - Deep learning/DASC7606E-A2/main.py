@@ -8,6 +8,10 @@ from utils import not_change_test_dataset, set_random_seeds
 
 import torch
 
+from local_test import evaluate_model
+
+import gc
+
 # Configuration Constants
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
@@ -41,17 +45,22 @@ def main():
         tokenized_datasets=tokenized_datasets,
     )
     trainer.train()
-
-    # clear cuda cache
+    
+    # manually gc
+    del trainer.model
+    del trainer
+    gc.collect()
     torch.cuda.empty_cache()
     
     # Evaluate the model on the test dataset
-    test_metrics = trainer.evaluate(
-        eval_dataset=tokenized_datasets["test"],
-        metric_key_prefix="test",
-    )
-    print("Test Metrics:", test_metrics)
+    # test_metrics = trainer.evaluate(
+    #     eval_dataset=tokenized_datasets["test"],
+    #     metric_key_prefix="test",
+    # )
+    # print("Test Metrics:", test_metrics)
 
+    test_metrics = evaluate_model()
+    print("\nTest Metrics:", test_metrics)
 
 if __name__ == "__main__":
     main()
