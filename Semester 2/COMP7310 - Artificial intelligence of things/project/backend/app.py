@@ -9,7 +9,7 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 # MQTT 配置
-MQTT_BROKER = "broker.emqx.io"  # Test MQTT broker
+MQTT_BROKER = "192.168.10.28"  # Test MQTT broker
 MQTT_TOPIC = "flask/esp32/bjh"
 DB_FILE = "mqtt_messages.db"
 
@@ -71,7 +71,7 @@ def index():
 
 @app.route('/messages')
 def messages():
-    messages = get_messages(limit=-1)
+    messages = get_messages(limit=50)
     return jsonify([{'timestamp': msg[0], 'data': msg[1]} for msg in messages])
 
 @app.route('/latest_message')
