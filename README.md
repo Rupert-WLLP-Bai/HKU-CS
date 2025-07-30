@@ -1,4 +1,4 @@
-![](https://pokfield.hku.hk/content/uploads/2021/04/University_of_Hong_Kong-Logo.wine_-e1615528764350-1024x197-1.png)
+![](https://www.innovationhub.hk/uploads/image/202206/955482b05c645839b853346509447674.png)
 
 # **MSc in Computer Science 2024~2025**
 
